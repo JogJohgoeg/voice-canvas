@@ -4,7 +4,9 @@
 
 **No local service is required.** The browser plays piano and renders the picture; a Cloudflare Worker calls GLM-4.7-Flash for one coordinated musical and visual plan. The provider credential is a Worker secret and never reaches the browser or repository. The GitHub Pages copy also connects to this cloud endpoint.
 
-Describe a performance: **“蓝色水墨与温柔的钢琴，旋律逐渐上升”**. Submit to start. Type **“停止”** to stop music and model continuation. Browser synthesis is the default. For a hardware instrument ask for **MIDI** or **数码钢琴**; with multiple devices, include **设备: device name**. This mutes browser synthesis; Web MIDI still requires browser/device permission.
+**The saved world appears on opening; click the scene once to start its looping piano background.** This reuses an already-generated original 16-beat phrase and cached world, with no new model request or World credits. 浏览页面即显示默认背景，点击画面开启循环钢琴；输入“停止”后不会自行恢复。
+
+Describe a new performance: **“蓝色水墨与温柔的钢琴，旋律逐渐上升”**. Submit to replace the background at a phrase boundary. Type **“停止”** to stop music and model continuation. Browser synthesis is the default. For a hardware instrument ask for **MIDI** or **数码钢琴**; with multiple devices, include **设备: device name**. This mutes browser synthesis; Web MIDI still requires browser/device permission.
 
 一个模型同时谱写音符与视觉计划，包含节奏、音高、时值、力度、风格、形态、颜色和强度。新计划在乐句边界一起切换；模型来不及时重复上一段。模型负责艺术决策，本地音频时钟与渲染器负责实时执行。没有预设选择、功能菜单或 Advanced 入口。
 

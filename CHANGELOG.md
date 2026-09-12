@@ -1,3 +1,9 @@
+## 2026-09-12 — Saved background playback
+
+- Open directly into the cached Opening world; first scene click starts an already-generated original 16-beat piano loop. No new model call or world generation is needed.
+- New descriptions replace the background through the shared phrase scheduler. Stop cancels sound and does not restart on later scene clicks.
+- Browser autoplay restrictions are respected; no extra control or menu was added.
+
 ## 2026-09-12 — Cached World layer
 
 - Added environment-only offline Marble generation, resumable operations, local SPZ/collider-GLB/thumbnail cache and persistent 12-draft / 4-full limit with measured credit deltas.
