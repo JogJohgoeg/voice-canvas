@@ -1,0 +1,55 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>水面来信 · 一段手写演出</title>
+<style>*{box-sizing:border-box}html,body{margin:0;overflow:hidden;background:#071723;color:#e4e9dd;font-family:Georgia,'Songti SC',serif}canvas{display:block;width:100vw;height:100dvh}header{position:fixed;top:7vh;left:8vw;pointer-events:none}h1{font-size:clamp(25px,4vw,48px);font-weight:400;letter-spacing:.2em;margin:0 0 12px}small{opacity:.55;letter-spacing:.12em}#line{position:fixed;bottom:22vh;width:100%;text-align:center;font-size:clamp(15px,2vw,24px);letter-spacing:.28em;pointer-events:none}button{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);border:1px solid #bcd4cf66;border-radius:30px;background:#071723bb;color:inherit;padding:13px 26px;font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #e5c985;outline-offset:5px}</style>
+<canvas aria-label="随原创钢琴展开的水纹与金色笔迹"></canvas><header><h1>水面来信</h1><small>手写音符 · 手写画面 · 约 45 秒</small></header><div id="line" aria-live="polite">有些话，先由水说。</div><button>开始这一段演出</button>
+<script>
+// Original, explicitly written score. [beat, MIDI pitch, length in beats, velocity].
+// D Dorian. Twelve 4/4 bars: arrival / unfolding / return. No arranger or random notes.
+const melody=[
+ [0,74,1.5,52],[2,69,.75,40],[3,72,.75,46],
+ [4,77,1.5,58],[6,76,.5,48],[6.5,74,.5,44],[7,69,.75,39],
+ [8,67,1,47],[9.5,69,.5,48],[10,71,1.5,55],
+ [12,72,1,48],[13,69,1,42],[14.5,74,1,52],
+ [16,74,.5,60],[16.5,77,.5,63],[17,81,1,69],[18.5,79,.5,61],[19,76,.75,55],
+ [20,77,.5,63],[20.5,74,.5,59],[21,71,1,57],[22,74,.5,65],[22.5,76,.5,67],[23,79,.75,73],
+ [24,81,1,77],[25,84,.5,81],[25.5,83,.5,73],[26,79,1,68],[27,77,.75,60],
+ [28,76,.5,62],[28.5,74,.5,57],[29,72,1,52],[30,71,1.5,49],
+ [32,74,1.5,51],[34,69,.75,41],[35,72,.75,43],
+ [36,77,1.5,48],[38,76,.5,39],[38.5,74,1,36],
+ [40,71,1,40],[41.5,69,1,34],[43,67,.75,30],
+ [44,66,1,30],[45.5,74,2.5,34]
+];
+const left=[
+ [0,38,3,45],[.5,57,2.5,28],[1,62,2,25],
+ [4,41,3,43],[4.5,60,2.5,29],[5,65,2,26],
+ [8,43,3,44],[8.5,59,2.5,28],[9,62,2,27],
+ [12,45,3,42],[12.5,55,2.5,25],[13,64,2,29],
+ [16,38,3,49],[16.5,57,1,32],[17.5,62,1,36],[18.5,65,1,38],[19.5,69,.5,34],
+ [20,43,3,51],[20.5,59,1,34],[21.5,62,1,38],[22.5,67,1,40],[23.5,71,.5,35],
+ [24,41,3,55],[24.5,60,1,37],[25.5,65,1,40],[26.5,69,1,39],[27.5,72,.5,33],
+ [28,45,3,46],[28.5,57,1,31],[29.5,60,1,30],[30.5,64,1,28],
+ [32,38,3,39],[32.5,57,2,26],[33,62,2,23],
+ [36,41,3,36],[36.5,60,2,24],[37,65,2,21],
+ [40,43,3,32],[40.5,59,2.5,23],[41,62,2,20],
+ [44,38,4,29],[44.5,57,3.5,20],[45,62,3,18]
+];
+const canvas=document.querySelector('canvas'),c=canvas.getContext('2d'),button=document.querySelector('button'),line=document.querySelector('#line');
+const beatSeconds=60/72,length=48*beatSeconds+4;let audio=null,start=0,running=false,finished=false,master,analyser;
+function piano(ctx,bus,n){const [beat,midi,duration,velocity]=n,at=start+beat*beatSeconds,hz=440*2**((midi-69)/12),release=duration*beatSeconds+.55;
+ for(let partial=1;partial<=6;partial++){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=hz*partial*Math.sqrt(1+.00013*partial*partial);const volume=(velocity/127)*.16/partial**1.65;g.gain.setValueAtTime(.00001,at);g.gain.exponentialRampToValueAtTime(volume,at+.008);g.gain.exponentialRampToValueAtTime(Math.max(.00002,volume*.18),at+Math.min(.45,release*.4));g.gain.exponentialRampToValueAtTime(.00001,at+release);o.connect(g);g.connect(bus);o.start(at);o.stop(at+release+.02);o.onended=()=>{o.disconnect();g.disconnect();};}}
+async function stop(){running=false;const old=audio;audio=null;if(old)await old.close();button.textContent='再听一次';}
+button.onclick=async()=>{if(running){await stop();return;}button.disabled=true;try{audio=new AudioContext();await audio.resume();master=audio.createGain();master.gain.value=.62;const compressor=audio.createDynamicsCompressor();compressor.threshold.value=-18;compressor.ratio.value=5;analyser=audio.createAnalyser();master.connect(compressor);compressor.connect(analyser);analyser.connect(audio.destination);
+ // One quiet echo tail, synthesized here; no samples or external assets.
+ const echo=audio.createDelay(2),feedback=audio.createGain(),low=audio.createBiquadFilter();echo.delayTime.value=.43;feedback.gain.value=.22;low.type='lowpass';low.frequency.value=1700;master.connect(echo);echo.connect(low);low.connect(feedback);feedback.connect(echo);low.connect(compressor);
+ start=audio.currentTime+.12;for(const n of [...left,...melody])piano(audio,master,n);running=true;finished=false;button.textContent='停在这里';}catch{line.textContent='声音未能开启，请再点击一次';if(audio)await stop();}finally{button.disabled=false;}};
+function frame(){const dpr=Math.min(2,devicePixelRatio||1),w=Math.round(innerWidth*dpr),h=Math.round(innerHeight*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+ const t=running?Math.max(0,audio.currentTime-start):finished?length:0,b=t/beatSeconds,unfold=Math.sin(Math.PI*Math.min(1,b/48)),warm=Math.max(0,1-Math.abs(b-25)/13),fade=Math.max(0,Math.min(1,(length-t)/4));
+ const bg=c.createLinearGradient(0,0,0,h);bg.addColorStop(0,`rgb(${7+warm*17},${23+warm*19},${35+warm*20})`);bg.addColorStop(1,'#040e17');c.fillStyle=bg;c.fillRect(0,0,w,h);
+ // A written progression of marks: sparse drops, an opening fan, a single returning line.
+ for(let row=0;row<26;row++){c.beginPath();const y=h*(.38+row*.019);for(let x=0;x<=w;x+=w/90){const wave=Math.sin(x/w*9+row*.23-t*.21)*(3+unfold*9)*dpr*Math.sin(x/w*Math.PI);if(x===0)c.moveTo(x,y+wave);else c.lineTo(x,y+wave);}c.strokeStyle=`rgba(112,168,183,${(.035+row*.001)*fade})`;c.lineWidth=dpr;c.stroke();}
+ for(const [beat,midi,duration,velocity] of melody){const age=b-beat;if(age<0||age>9)continue;const strength=(1-age/9)*velocity/100*fade,x=w*(.18+(midi-66)/18*.64),y=h*(.56+Math.sin(beat*.37)*.1),radius=(8+age*22)*dpr;c.strokeStyle=`rgba(${Math.round(170+warm*64)},${Math.round(194+warm*16)},${Math.round(205-warm*70)},${strength*.6})`;c.lineWidth=(1+strength*2)*dpr;c.beginPath();c.ellipse(x,y,radius,radius*.23,0,0,Math.PI*2);c.stroke();
+  for(let k=0;k<5;k++){const a=beat*.19+k*.8+age*.05,reach=(12+warm*80)*dpr;const sx=x+Math.cos(a)*radius*.45,sy=y+Math.sin(a)*radius*.14;c.beginPath();c.moveTo(sx,sy);c.quadraticCurveTo(sx+Math.cos(a+.3)*reach*.5,sy-Math.sin(a)*reach*.3,sx+Math.cos(a)*reach,sy-Math.sin(a+.4)*reach*.4);c.lineWidth=(2+warm*2)*dpr;c.lineCap='round';c.stroke();}}
+ if(b>42){c.strokeStyle=`rgba(225,218,183,${Math.min(1,(b-42)/6)*fade*.5})`;c.lineWidth=dpr;c.beginPath();c.moveTo(w*.3,h*.66);c.quadraticCurveTo(w*.5,h*.65,w*.7,h*.66);c.stroke();}
+ const words=b<16?'有些话，先由水说。':b<32?'风把未寄出的名字，一笔一笔展开。':'而我只留下一圈，慢慢消失的回声。';if(line.textContent!==words)line.textContent=words;line.style.opacity=String(.65*fade);
+ if(running&&t>=length){finished=true;void stop();}requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+</script></html>
