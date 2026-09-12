@@ -9,7 +9,7 @@ const $=id=>document.getElementById(id);let state=initial(),preview=null,history
 let style="fusion",hasModel=false,soundOwnsMic=false;
 const micAudio=microphoneAudio(message=>{$('status').textContent=message},()=>({enabled:sound.enabled,rms:sound.rms}));
 const sound=liveSound(message=>{$('status').textContent=message});
-function blenderScene(){if(!['moyers','fusion'].includes(style))return null;const group=formPlan(preview??state)[0];return {style,workStyle:{family:state.objects.length||state.weather?group.family:evolution.profile.family,palette:group.tint?[group.tint,group.tint]:evolution.profile.colours},variation:{seed:evolution.seed},audioMood:{level:micAudio.state.level,warmth:micAudio.state.warmth}};}
+function blenderScene(){if(!['moyers','fusion'].includes(style))return null;const group=formPlan(preview??state)[0];return {style,workStyle:{family:state.objects.length||state.weather?group.family:evolution.profile.family,palette:style==='fusion'?[evolution.seed%2?'#e5b433':'#2859cd','#657075']:group.tint?[group.tint,group.tint]:evolution.profile.colours},variation:{seed:evolution.seed},audioMood:{level:micAudio.state.level,warmth:micAudio.state.warmth}};}
 const blender=blenderLayer(blenderScene,$('blenderStatus'));
 const workSelect=$('work');workSelect.options[0].textContent=`全部 ${works.length} 项随机 / All styles`; for(const [i,work] of works.entries()){const option=document.createElement('option');option.value=i;option.textContent=work.name;workSelect.append(option);}
 const evolution={enabled:true,selectedWork:-1,workIndex:-1,remaining:[],profile:works[0],seed:317,variant:1,effect:0,strength:.6,density:1,next:0,

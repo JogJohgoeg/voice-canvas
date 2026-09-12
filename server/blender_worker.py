@@ -72,14 +72,14 @@ class BlenderWorker:
         # Any already-warmed matching family can play while this exact seed renders.
         for manifest in CACHE.glob('*/manifest.json'):
             data=json.loads(manifest.read_text())
-            if data['spec']['family']==spec['family'] and data['spec'].get('style','moyers')==spec['style']:
+            if data['spec']['family']==spec['family'] and data['spec'].get('style','moyers')==spec['style'] and (spec['style']!='fusion' or data['spec']['palette']==spec['palette']):
                 return {**data,'approximate':True,'requested_key':key}
         return {'status':'queued','key':key}
     def prewarm(self):
-        for family in (1,4):self.request({'style':'fusion','workStyle':{'family':family}})
-        for family in range(6):
-            palette=['#e63832','#ffe1a0'] if family==0 else ['#bbc3ce','#f3eee2'] if family==2 else ['#168eff','#70ffe6']
-            self.request({'workStyle':{'family':family,'palette':palette}})
+        # Prioritize all default-style families, plus both accents for sea/organism.
+        for family in (1,4,0,2,3):self.request({'style':'fusion','workStyle':{'family':family}})
+        for family in (1,4):self.request({'style':'fusion','workStyle':{'family':family},'variation':{'seed':318}})
+        self.request({'workStyle':{'family':1,'palette':['#168eff','#70ffe6']}})
     def run(self):
         while True:
             key,spec=self.jobs.get();start=time.monotonic();folder=CACHE/key;folder.mkdir(exist_ok=True)

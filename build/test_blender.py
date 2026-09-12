@@ -13,3 +13,22 @@ print('Blender key stability, seed variation, mood summary and input bounds pass
 
 assert specification({'objects':[{'kind':'fire','tint':'#ff0000'}]})['family']==0
 assert specification({'objects':[{'kind':'fire','tint':'#ff0000'}]})['palette']==['#ff0000','#ff0000']
+
+from blender_worker import BlenderWorker
+jobs=[];worker=object.__new__(BlenderWorker);worker.request=jobs.append;worker.prewarm()
+assert len(jobs)==8
+assert {specification(job)['family'] for job in jobs if job.get('style')=='fusion'}==set(range(5))
+assert len({tuple(specification(job)['palette']) for job in jobs if job.get('style')=='fusion'})==2
+print('Prewarm covers all five Fusion families and both accents in eight bounded jobs')
+import tempfile,json,queue,threading
+from unittest.mock import patch
+with tempfile.TemporaryDirectory() as folder:
+    cache=Path(folder);item=cache/'example';item.mkdir()
+    warm=specification({'style':'fusion','variation':{'seed':317}})
+    manifest={'status':'ready','spec':warm,'url':'/example.webm'}
+    (item/'manifest.json').write_text(json.dumps(manifest))
+    worker=object.__new__(BlenderWorker);worker.available=True;worker.jobs=queue.Queue(8);worker.pending=set();worker.lock=threading.Lock()
+    with patch('blender_worker.CACHE',cache):
+        assert worker.request({'style':'fusion','variation':{'seed':318}})['status']=='queued'
+        assert worker.request({'style':'fusion','variation':{'seed':319}})['approximate'] is True
+print('Cached Fusion fallback keeps the requested accent and accepts another matching seed')

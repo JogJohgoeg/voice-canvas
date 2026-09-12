@@ -1,13 +1,13 @@
-import {seeded,parameters} from './av_patch.mjs';
+import {seeded,parameters,nextReform} from './av_patch.mjs';
 import {particleField} from './particles.mjs';
 import {features,microphoneAudio} from './audio.mjs';
 import {works} from './works.mjs';
 import {hash,initial} from './parser.mjs';
 const $=id=>document.getElementById(id),scene=initial();
-let seed=0,P,rng,field=particleField($('stage')),ctx,graph,epoch=0,nextEvent=0,nextMutation=0,eventIndex=0,events=[],pulse=0,previous={},lastAnalysis=0,lastFrame=0,visualTime=0,paused=false,recording=false,activeVoices=0,stats={};
+let seed=0,P,rng,field=particleField($('stage')),ctx,graph,epoch=0,nextEvent=0,nextMutation=0,eventIndex=0,lastReform=-Infinity,events=[],pulse=0,previous={},lastAnalysis=0,lastFrame=0,visualTime=0,paused=false,recording=false,activeVoices=0,stats={};
 const mic=microphoneAudio(message=>$('status').textContent=message,()=>({enabled:!!ctx,rms:previous.rms??0}));
-function evolution(){return {seed,symmetry:P.symmetry,variant:P.variant,effect:P.effect,strength:P.strength,density:P.density,profile:works[P.work],clock:visualTime};}
-function choose(value){if(recording){$('status').textContent='Finish recording before changing seed / 录制结束后切换种子';$('seed').value=String(seed);location.hash=String(seed);return;}previous={};pulse=0;seed=/^\d+$/.test(value)?Number(value)>>>0:hash(value);P=parameters(seed);rng=seeded(seed^0xa3c59ac3);location.hash=String(seed);$('seed').value=String(seed);events=[];eventIndex=0;nextEvent=0;nextMutation=P.period;visualTime=0;if(ctx){epoch=ctx.currentTime;graph?.stop();graph=makeGraph();}updateLabel();}
+function evolution(){return {seed,symmetry:P.symmetry,breathRate:P.lfo[0],variant:P.variant,effect:P.effect,strength:P.strength,density:P.density,profile:works[P.work],clock:visualTime};}
+function choose(value){if(recording){$('status').textContent='Finish recording before changing seed / 录制结束后切换种子';$('seed').value=String(seed);location.hash=String(seed);return;}previous={};pulse=0;seed=/^\d+$/.test(value)?Number(value)>>>0:hash(value);P=parameters(seed);rng=seeded(seed^0xa3c59ac3);location.hash=String(seed);$('seed').value=String(seed);events=[];eventIndex=0;lastReform=-Infinity;nextEvent=0;nextMutation=P.period;visualTime=0;if(ctx){epoch=ctx.currentTime+.1;graph?.stop();graph=makeGraph();}updateLabel();}
 function updateLabel(){$('patch').textContent=`${works[P.work].name} · seed ${seed} · ${P.symmetry}-fold · ${P.wave} / ${P.filter}`;}
 function vary(){P.variant+= (rng()-.5)*.6;P.strength=Math.max(.2,Math.min(1,P.strength+(rng()-.5)*.16));P.cutoff=Math.max(250,Math.min(3000,P.cutoff+(rng()-.5)*250));P.density=Math.max(.5,Math.min(1.5,P.density+(rng()-.5)*.12));graph?.filter.frequency.setTargetAtTime(P.cutoff,ctx.currentTime,.7);updateLabel();}
 function makeGraph(){
@@ -23,12 +23,13 @@ function makeGraph(){
  const noise=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate),data=noise.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=noiseRandom()*2-1;
  return {filter,volume,analyser,destination,noise,bus,samples:new Float32Array(analyser.fftSize),spectrum:new Float32Array(analyser.frequencyBinCount),stop(){nodes.forEach(n=>n.stop());bus.disconnect();filter.disconnect();delay.disconnect();feedback.disconnect();convolver.disconnect();wet.disconnect();analyser.disconnect();},gesture(at,kind,strength){if(activeVoices>=12)return;activeVoices++;const grain=ctx.createBufferSource(),g=ctx.createGain();grain.buffer=noise;grain.playbackRate.value=.5+strength;g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(.08+strength*.09,at+.008);g.gain.exponentialRampToValueAtTime(.0001,at+P.grain);grain.connect(g);g.connect(bus);grain.start(at,(eventIndex*.137)% .7);grain.stop(at+P.grain);grain.onended=()=>{activeVoices--;grain.disconnect();g.disconnect();};if(kind==='reform'){filter.frequency.setTargetAtTime(P.cutoff*1.8,at,.06);filter.frequency.setTargetAtTime(P.cutoff,at+.15,.4);}}};
 }
-async function toggle(){try{if(!ctx){ctx=new AudioContext();await ctx.resume();epoch=ctx.currentTime;graph=makeGraph();visualTime=0;nextEvent=0;nextMutation=P.period;paused=false;}else{paused=!paused;await(paused?ctx.suspend():ctx.resume());}$('start').textContent=paused?'继续 / Resume':'暂停 / Pause';$('status').textContent=paused?'Paused':'Audio clock · 原创合成 / Original synthesis';}catch(e){$('status').textContent=e.message;}}
+async function toggle(){try{if(!ctx){ctx=new AudioContext();await ctx.resume();epoch=ctx.currentTime+.1;graph=makeGraph();visualTime=0;nextEvent=0;nextMutation=P.period;paused=false;}else{paused=!paused;await(paused?ctx.suspend():ctx.resume());}$('start').textContent=paused?'继续 / Resume':'暂停 / Pause';$('status').textContent=paused?'Paused':'Audio clock · 原创合成 / Original synthesis';}catch(e){$('status').textContent=e.message;}}
 setInterval(()=>{if(!ctx||paused||ctx.state!=='running')return;const time=ctx.currentTime-epoch;if(nextEvent<time-.2)nextEvent=time;
- while(nextEvent<time+.1){const strength=rng(),kind=eventIndex%8===0?'reform':'burst';if(strength<P.probability||kind==='reform'){const at=epoch+nextEvent;graph.gesture(at,kind,strength);events.push({time:nextEvent,strength,kind});}eventIndex++;nextEvent+=P.interval;}
+ while(nextEvent<time+.1){const strength=rng(),kind='burst';if(strength<P.probability){const at=epoch+nextEvent;graph.gesture(at,kind,strength);events.push({time:nextEvent,strength,kind});}eventIndex++;nextEvent+=P.interval;}
+ const reform=nextReform(P,time);if(reform<=time+.1&&reform>lastReform+.2){graph.gesture(epoch+reform,'reform',.7);events.push({time:reform,strength:.7,kind:'reform'});events.sort((a,b)=>a.time-b.time);lastReform=reform;}
  if($('auto').checked&&time>=nextMutation){vary();nextMutation+=P.period;}
 },25);
-function frame(ms){const dt=Math.min(.05,(ms-lastFrame)/1000||.016);lastFrame=ms;if(!paused){visualTime=ctx?ctx.currentTime-epoch:visualTime+dt;pulse*=Math.exp(-dt*5);while(events.length&&events[0].time<=visualTime){const e=events.shift();pulse=1;if(e.kind==='reform')P.strength=Math.max(.2,P.strength*.96);}
+function frame(ms){const dt=Math.min(.05,(ms-lastFrame)/1000||.016);lastFrame=ms;if(!paused){visualTime=ctx?Math.max(0,ctx.currentTime-epoch):visualTime+dt;pulse*=Math.exp(-dt*5);while(events.length&&events[0].time<=visualTime){const e=events.shift();pulse=1;if(e.kind==='reform')P.strength=Math.max(.2,P.strength*.96);}
  if(graph&&ms-lastAnalysis>33){graph.analyser.getFloatTimeDomainData(graph.samples);graph.analyser.getFloatFrequencyData(graph.spectrum);previous=features(graph.samples,graph.spectrum,ctx.sampleRate,previous);lastAnalysis=ms;}
  const m=mic.update(ms,dt),a={level:Math.min(1,(previous.level??0)*2+m.level*.4),warmth:previous.warmth??0,pitch:previous.pitch??0,pulse:Math.max(pulse,m.pulse??0)};
  if(field?.needsRebuild){field.canvas.remove();field=particleField($('stage'));}if(field)stats=field.draw(visualTime,dt,scene,a,false,evolution(),$('style').value)??{};
