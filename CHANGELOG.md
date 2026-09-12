@@ -1,3 +1,10 @@
+## 2026-09-12 — Native TouchDesigner rebuild
+
+- Microphone and audio recordings now drive one native analysis chain and an original 1280×720 GPU flow shader, with editable `.toe` network and source.
+- Added source, recording file, sensitivity and intensity controls; optional recording playback, microphone monitoring always off.
+- Included original diagnostic WAV, native verification script and guide. Legacy browser project preserved separately.
+- Measured approximately 58–60 fps after warm-up on this Mac; end-to-end audio latency is not yet measured.
+
 ## 2026-09-12 — Random piano background
 
 - Replaced exact repetition of the saved phrase with locally arranged variations: a fresh music seed each visit, changing rhythm, melody, register, dynamics and two/three-voice textures.

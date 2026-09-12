@@ -1,0 +1,6 @@
+*.toe.dir/
+*.toe.toc
+VoiceCanvas.*.toe
+build-result.txt
+verification-*.json
+__pycache__/
