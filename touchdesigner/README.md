@@ -1,6 +1,6 @@
 # Voice Canvas — TouchDesigner 原生声画
 
-**麦克风或录音 → 实时音频分析 → 水墨山水。**
+**麦克风或录音 → 实时音频分析 → 人物衣料与呼吸形变。**
 
 
 
@@ -15,13 +15,11 @@
 
 首次打开默认使用麦克风。切换 Recording 可使用附带的 `test_signal.wav`，这是代码生成的八秒测试信号（静音、低频、高频、中频），不是音乐作品或录音素材。换成自己的录音即可演出。
 
-## 当前画面 / Ink Landscape
+## 当前画面 / Portrait
 
-宣纸底色、五层远近山峦、淡月、雾气与水面。声音推动山脊起伏、层间错位和湿边扩散；历史声音使各层延迟呼应。纸纹与皴染纹理固定在空间中，不逐帧随机闪烁。
+`assets/performer-side.png`（默认侧面）和 `assets/performer.png`（正面）是一次性生成的虚构成年人物底图，衣着完整。可在 portrait 节点 File 参数切换这两个视角；它们是独立底图，不支持三维自由旋转。GLSL 在衣料区域做有界二维形变：声音包络驱动呼吸起伏，实时音量驱动细小衣料运动，脸部保持稳定。这不是三维人体或真实布料模拟；运行中无需图像模型或服务器。请将 assets 文件夹与工程一起保留。
 
-所有形态、纸纹、墨色和水波均由原创实时 GLSL 生成，没有图片素材。Esc 退出全屏，F1 返回演出。麦克风监听关闭。
-
-`microphone` / `recording` → `audio` → `update` → `features` / `memory` → `visual` → `out1`。
+实测麦克风输入约 55 fps，未测量端到端音频延迟。Esc 退出全屏，F1 返回；麦克风监听关闭。
 
 ## 修改与重建
 
@@ -36,9 +34,3 @@ exec(compile(open(VOICE_TD_DIR + '/build.py').read(), VOICE_TD_DIR + '/build.py'
 
 Open `VoiceCanvas.toe`, choose **Microphone** or **Recording** in `/project1` → **Audio Visual**, then F1 for performance. Recording monitoring is optional; microphone monitoring is always disabled. No server or AI service is used. The legacy browser show remains available separately.
 
-## Motion references
-
-- [Memo Akten — Simple Harmonic Motion](https://memo.tv/projects/2019/shm/): sound and image share structured, evolving movement.
-- [TouchDesigner fluid component, citing Bruno Imbrizi](https://derivative.ca/community-post/asset/fluid-simulation-component/65741): source force, vorticity and persistence are useful references for continuous deformation.
-
-Our implementation uses an original analytic folded-surface shader, not the referenced fluid solver or copied assets. Live sound immediately deforms the whole surface; the recent feature history preserves the phrase. Geometry moves strongly while material brightness remains comparatively stable.

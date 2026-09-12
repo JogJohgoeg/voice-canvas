@@ -1,3 +1,8 @@
+## 2026-09-12 — Native portrait
+
+- Replaced the primitive mannequin with an original generated, fully clothed fictional adult portrait and bounded local GPU breathing/cloth deformation.
+- Included the relative-path image asset and rebuild wiring; microphone verification: 55 fps, no operator errors.
+
 ## 2026-09-12 — Native TouchDesigner rebuild
 
 - Microphone and audio recordings now drive one native analysis chain and an original 1280×720 GPU flow shader, with editable `.toe` network and source.

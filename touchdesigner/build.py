@@ -28,6 +28,8 @@ try:
  memory=c.create('scriptTOP','memory'); memory.par.callbacks=cb
  if c.op('memory_callbacks1'): c.op('memory_callbacks1').destroy()
  g.inputConnectors[0].connect(memory)
+ photo=c.create('moviefileinTOP','portrait'); photo.par.file='assets/performer-side.png'
+ g.inputConnectors[1].connect(photo)
  g.par.vec=2; g.par.vec0name='uAudio'; g.par.vec1name='uScene'
  for i,axis in enumerate('xyzw'): g.par['vec0value'+axis].expr="op('features')[%d][0]"%i
  g.par.vec1valuex.expr='absTime.seconds'; g.par.vec1valuey.expr='parent().par.Intensity'; g.par.vec1valuez=1280/720; g.par.vec1valuew=0
