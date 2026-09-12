@@ -33,3 +33,5 @@
 - Added Monet and Fusion + Monet light, audio-driven water ripples and cloud density.
 - Added optional Cinematic cello/piano synthesis, shared-clock phrase/cadence mapping and combined WebM recording.
 - Added optional native EEVEE cloud/water/light rendering, cached asynchronously.
+
+- Fixed local serving of new modules; dependency-route regression check added. Cinematic level and tempo display refined; Monet PNG/WebM also works without WebGL.
