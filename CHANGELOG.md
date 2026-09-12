@@ -42,3 +42,5 @@
 - Added seeded phrase-level random piano arrangements: voice combinations, arpeggios, inversions, registers, rhythmic rests, dynamics and decay; optional fixed arrangement.
 
 - Vary now requests a new piano arrangement on the next beat without restarting the audio clock.
+
+- Completed all six piano mappings in Monet light: palette, cloud motion, register placement, pedal haze/ripples and phrase breathing; fixed negative hue wrapping for red section palettes.

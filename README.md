@@ -112,3 +112,5 @@ Cinematic piano now defaults to three interlocking parts: bass support, middle-r
 [三声部钢琴与印象派画面 · 15 秒示范 / 15-second original trio preview](web/samples/cinematic-trio.webm) — generated and recorded from this app, with no external audio or image assets.
 
 **乐句随机 / Vary phrases** is on by default for Cinematic: each phrase picks a seeded part combination, arpeggio pattern, inversion, register, rhythm and touch. The part selector sets the maximum density. Disable it for a fixed arrangement; seed + controls + the same input reproduce the variation sequence. 默认按乐句随机编配；关闭开关可固定织体，声部选择器设置最大密度。
+
+In Piano mode, Monet responds to all six mapping sliders, including pedal-controlled haze/ripple persistence and register placement; Zero-AI keeps its stroke count fixed for reproducible input.

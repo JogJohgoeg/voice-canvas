@@ -16,3 +16,5 @@ const active=pianoMapping(musical,mappingDefaults,317,localSection('Ondine'));
 const disabled=pianoMapping(musical,{harmony:0,tension:0,dynamics:0,register:0,pedal:0,phrase:0},317,localSection('Ondine'));
 assert.equal(disabled.evolution.piano.tension,0);assert.equal(disabled.evolution.piano.pedal,0);assert.equal(disabled.audio.level,0);assert(active.evolution.piano.colourMix>0);assert.notDeepEqual(active.evolution.piano.colour,pianoMapping(musical,mappingDefaults,317,localSection('flight and light')).evolution.piano.colour);
 console.log('Independent mapping controls and section-derived palettes passed');
+
+const red=pianoMapping({...musical,key:0},mappingDefaults,0,{family:0,palette:['#ff0000','#ffffff']});assert(red.evolution.piano.colour.every(Number.isFinite));console.log('Negative seeded hue wraps correctly for red sections');

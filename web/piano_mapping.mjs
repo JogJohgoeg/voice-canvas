@@ -1,6 +1,6 @@
 export const mappingDefaults={harmony:1,tension:1,dynamics:1,register:1,pedal:1,phrase:1};
 const clamp=x=>Math.max(0,Math.min(1,x));
-function hue(h,s=.8,l=.55){const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs(h/60%2-1)),m=l-c/2;return [[c,x,0],[x,c,0],[0,c,x],[0,x,c],[x,0,c],[c,0,x]][Math.floor(h/60)%6].map(v=>v+m);}
+function hue(h,s=.8,l=.55){h=((h%360)+360)%360;const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs(h/60%2-1)),m=l-c/2;return [[c,x,0],[x,c,0],[0,c,x],[0,x,c],[x,0,c],[c,0,x]][Math.floor(h/60)%6].map(v=>v+m);}
 function paletteHue(hex){const [r,g,b]=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255),hi=Math.max(r,g,b),lo=Math.min(r,g,b),d=hi-lo;if(!d)return 44;return ((hi===r?(g-b)/d:hi===g?(b-r)/d+2:(r-g)/d+4)*60+360)%360;}
 export function pianoMapping(f,settings,seed,section={family:1,palette:['#2859cd','#e5b433']}){
  const tension=clamp(f.tension*settings.tension),dynamic=clamp(f.dynamics*settings.dynamics),base=paletteHue(section.palette[0])+(seed%17-8)+f.key*2*settings.harmony,colour=hue(base%360,.8-f.dissonance*.55*settings.harmony),secondary=hue((base+(f.quality==='dominant'?180:35+f.dissonance*100)*settings.harmony)%360,.8-f.dissonance*.5);
