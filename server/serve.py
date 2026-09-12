@@ -45,6 +45,8 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply({'error':'Local requests only'},403)
         elif self.path == '/api/status':
             self.reply({'status': BACKEND.name, 'backend': BACKEND.name, 'process_id': BACKEND.proc.pid if BACKEND.proc and BACKEND.proc.poll() is None else None})
+        elif re.fullmatch(r'/repertoire/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_.-]+\.(?:json|mid|midi)',self.path) and '..' not in self.path and (ROOT/self.path.lstrip('/')).resolve().is_relative_to((ROOT/'repertoire').resolve()):
+            super().do_GET()
         elif re.fullmatch(r'/blender_cache/[0-9a-f]{24}/loop\.webm',self.path):
             super().do_GET()
         elif self.path.split('?')[0] in ('/','/index.html','/voice.html','/av_random.html','/piano.html','/piano_projector.html','/app.js','/parser.mjs','/renderer.mjs','/audio.mjs','/particles.mjs','/sound.mjs','/works.mjs','/blender.mjs','/monet.mjs','/cinematic.mjs','/performer.mjs','/av_patch.mjs'):
@@ -54,7 +56,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
         if not self.local_request():
             return self.reply({'error': 'Local requests only'},403)
-        if self.path not in ('/api/scene','/api/blender','/api/section'):
+        if self.path not in ('/api/scene','/api/blender','/api/section','/api/plugin'):
             return self.reply({'error':'Not found'},404)
         try:
             length = int(self.headers.get('Content-Length','0'))
@@ -66,6 +68,10 @@ class Handler(SimpleHTTPRequestHandler):
                 if not isinstance(data,dict) or not isinstance(data.get('scene'),dict):
                     raise ValueError('Invalid scene')
                 return self.reply(BACKEND.blender_scene(data['scene']))
+            if self.path == '/api/plugin':
+                if not isinstance(data,dict) or not isinstance(data.get('prompt'),str) or not 0<len(data['prompt'])<=2000:
+                    raise ValueError('Invalid plugin prompt')
+                data={**data,'transcript':'','scene':{}}
             if self.path == '/api/section':
                 if not isinstance(data,dict) or not isinstance(data.get('piece'),str) or not 0<len(data['piece'])<=300:
                     raise ValueError('Invalid piece name')
@@ -80,7 +86,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Content-Type','application/x-ndjson; charset=utf-8')
         self.end_headers()
         try:
-            stream=BACKEND.section_brief(data['piece'],data.get('style','fusion')) if self.path=='/api/section' else BACKEND.generate(data['transcript'],data['scene'])
+            stream=BACKEND.visual_plugin(data['prompt'],data.get('style','fusion')) if self.path=='/api/plugin' else BACKEND.section_brief(data['piece'],data.get('style','fusion')) if self.path=='/api/section' else BACKEND.generate(data['transcript'],data['scene'])
             for event in stream:
                 self.wfile.write((json.dumps(event,ensure_ascii=False)+'\n').encode())
                 self.wfile.flush()

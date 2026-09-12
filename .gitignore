@@ -7,3 +7,8 @@ __pycache__/
 *.pem
 .DS_Store
 .test-output/
+
+repertoire/local/
+repertoire/catalogue-maestro.json
+web/repertoire/local/
+docs/repertoire/local/

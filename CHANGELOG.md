@@ -52,3 +52,10 @@
 - Vary now requests a new piano arrangement on the next beat without restarting the audio clock.
 
 - Completed all six piano mappings in Monet light: palette, cloud motion, register placement, pedal haze/ripples and phrase breathing; fixed negative hue wrapping for red section palettes.
+
+## 2026-09-12 — GPU plugins and real connectome
+
+- Added eight original offline GLSL plugins, live parameter editing, bounded JSON gallery/import/export and asynchronous GPT-6 plugin generation.
+- Compile and three-frame smoke checks run in a worker; completed draw budget is below 6 ms with resolution degradation and rejection.
+- Added MaleCNS v1.0 visual-to-descending graph: 317 nodes, 20,937 weighted edges, 318 GF-target edges, labelled estimated spatial layout.
+- Included plugin/connectome layers in projector and recording.
