@@ -108,3 +108,7 @@ Choose **Monet / 印象派** for original procedural pastel clouds, reflected li
 选择 Monet 呈现淡彩云层、水光与起音涟漪；Fusion + Monet 将水墨结构与印象派光线融合。电影氛围使用代码合成弓弦和钢琴音色，默认关闭，点击开启；随机声画页支持同步录制。可选 Blender 后台生成原生体积云与光束，忙碌时实时画布继续。
 
 Cinematic piano now defaults to three interlocking parts: bass support, middle-register arpeggios and treble responses. The piano-parts selector offers rich, two-part or sparse arrangements while preserving the shared audiovisual clock. 钢琴默认三声部，可选双声部或疏朗。Monet/Fusion + Monet also works in Piano mode and the projector, and is saved with piece presets.
+
+[三声部钢琴与印象派画面 · 15 秒示范 / 15-second original trio preview](web/samples/cinematic-trio.webm) — generated and recorded from this app, with no external audio or image assets.
+
+**乐句随机 / Vary phrases** is on by default for Cinematic: each phrase picks a seeded part combination, arpeggio pattern, inversion, register, rhythm and touch. The part selector sets the maximum density. Disable it for a fixed arrangement; seed + controls + the same input reproduce the variation sequence. 默认按乐句随机编配；关闭开关可固定织体，声部选择器设置最大密度。
