@@ -4,7 +4,7 @@
 
 打开 [`touchdesigner/VoiceCanvas.toe`](touchdesigner/VoiceCanvas.toe)，在 `/project1` 的 **Audio Visual** 参数页选择 **Microphone / 麦克风** 或 **Recording / 录音**。F1 进入演出，Esc 返回编辑。默认使用麦克风；也可选择自己的录音或附带测试信号。
 
-连续波面呈现声音的起音、持续、转折与收尾，保留约四秒过程；不使用闪烁点。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
+当前是原创黑白相位线阵 Phase Field，参考 Matrix 的空间与频率关系；麦克风推动压缩、展开和干涉位移，保留声音过程。Esc 退出全屏，F1 返回演出。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
 
 ![Native GPU audio visual](touchdesigner/preview.png)
 

@@ -1,63 +1,41 @@
+// Phase Field: original microphone-driven interference geometry.
+// Inspired by spatial/frequency relationships; not a reproduction of Matrix.
 uniform vec4 uAudio;
 uniform vec4 uScene;
 out vec4 fragColor;
-float hash(float n){return fract(sin(n*127.1)*43758.5453);}
 vec4 past(float x){return texture(sTD2DInputs[0],vec2(clamp(x,0.,1.),.5));}
+float ruled(float v,float thickness){
+ float d=abs(fract(v+.5)-.5);
+ float aa=max(fwidth(v),.001);
+ return 1.-smoothstep(thickness-aa,thickness+aa,d);
+}
 void main(){
  vec2 uv=vUV.st;
- float live=sqrt(clamp(uAudio.x,0.,1.)), t=uScene.x;
- // Sound moves a continuous camera and the built environment, never window flashes.
- float sway=sin(t*.25)*(.008+live*.035);
- vec2 p=uv-vec2(.5+sway,.43+live*.025);
- p.x*=uScene.z;
- vec3 sky=mix(vec3(.015,.032,.080),vec3(.22,.20,.24),exp(-max(p.y,0.)*5.));
- sky+=vec3(.29,.10,.025)*exp(-length((p-vec2(.44,.08))*vec2(1.,2.))*5.);
- vec3 col=p.y<-.04 ? vec3(.015,.025,.042) : sky;
- // Distant skyline, then nearer rows. Gap down the centre forms a boulevard.
- for(int row=0;row<5;row++){
-  float layer=float(row), scale=.23+layer*.20;
-  float cell=.075*scale;
-  float shift=sin(t*.14+layer*.5)*live*.018;
-  float id=floor((p.x+shift)/cell);
-  float local=fract((p.x+shift)/cell);
-  float seed=id+row*71.;
-  float sound=past(fract(id*.071+layer*.19)).x;
-  float height=(.08+hash(seed)*.31)*scale;
-  height*=1.+live*.24+sqrt(max(sound,0.))*.30;
-  float base=-.018-layer*.043;
-  float avenue=.015+layer*.032;
-  float outer=abs(p.x+shift);
-  if(outer>avenue && local>.07 && local<.88 && p.y>base && p.y<base+height){
-   float face=local<.64?1.:.52;
-   vec3 material=mix(vec3(.14,.20,.29),vec3(.022,.046,.082),layer/4.);
-   col=material*face;
-   // Fixed warm architectural windows; no flickering or blinking masks.
-   vec2 win=vec2(local*4.,(p.y-base)/(.014*scale));
-   vec2 w=fract(win);
-   float lit=step(.29,hash(seed*17.+floor(win.y)*5.+floor(win.x)));
-   float pane=step(.20,w.x)*step(w.x,.65)*step(.22,w.y)*step(w.y,.67);
-   col+=vec3(.88,.47,.15)*pane*lit*(.14+layer*.045)*face;
-   col+=vec3(.22,.45,.62)*exp(-abs(p.y-(base+height))*550.)*.45;
-  }
- }
- // Perspective boulevard with smooth audio-driven dolly and reflective paving.
- if(p.y<-.04){
-  float depth=(-p.y-.04)/.50;
-  float roadWidth=.025+depth*.64;
-  if(abs(p.x)<roadWidth){
-   col=mix(vec3(.065,.075,.11),vec3(.008,.016,.03),depth);
-   float perspectiveX=p.x/(depth+.04);
-   float centre=exp(-abs(perspectiveX)*100.);
-   float side=exp(-abs(abs(p.x)-roadWidth*.88)*380.);
-   col+=vec3(.45,.24,.085)*(centre*.28+side*.65);
-   float transverse=pow(.5+.5*cos(12./(depth+.13)+t*1.4),28.);
-   col+=vec3(.07,.16,.20)*transverse*.26;
-   // Stretched city reflections, steady light moving with the camera.
-   float refl=pow(.5+.5*sin(perspectiveX*61.),12.);
-   col+=vec3(.22,.105,.038)*refl*exp(-depth*3.)*.4;
-  }
- }
- float vignette=1.-smoothstep(.45,1.15,length(vec2(p.x*.6,p.y)));
- col*=vignette;
- fragColor=TDOutputSwizzle(vec4(1.-exp(-col*1.6),1.));
+ vec2 p=(uv-.5)*vec2(uScene.z,1.);
+ float live=sqrt(clamp(uAudio.x,0.,1.));
+ float body=sqrt(clamp(uScene.w,0.,1.)), t=uScene.x;
+ float recorded=sqrt(max(past(uv.x).x,0.));
+ float force=body*.65+live*.35;
+ // Two continuous planes: the current envelope opens space between them.
+ float bend=sin(p.x*3.2+t*.17)*(.018+force*.17);
+ bend+=sin(p.x*6.3-t*.11)*recorded*.060;
+ float spread=.12+force*.22;
+ float y=(p.y-bend)/(1.+force*.85);
+ float extent=(1.-smoothstep(.46,.50,abs(p.y)))*(1.-smoothstep(.82,.87,abs(p.x)));
+ float plane=1.-smoothstep(spread+.065,spread+.09,abs(y));
+ float horizontal=ruled(y*44.,.055);
+ float depth=1./(.7+abs(y)*2.);
+ float vertical=ruled((p.x+sin(y*7.+t*.14)*force*.055)*28.*depth,.035);
+ float field=max(horizontal*.88,vertical*.23)*plane;
+ // A second shifted plane makes interference readable as spatial displacement.
+ float angle=.035+body*.13;
+ float other=(y+p.x*angle+recorded*.045)*44.;
+ float interference=ruled(other,.045)*plane*.42;
+ float border=1.-smoothstep(.001,.003,abs(abs(y)-spread-.065));
+ float signalY=-.385+past(uv.x).x*.07;
+ float history=1.-smoothstep(.001,.0025,abs(p.y-signalY));
+ float white=max(max(field,interference),border*.70);
+ white=max(white,history*.55)*extent;
+ // No strobes, blinking points, generated sound, or copied imagery.
+ fragColor=TDOutputSwizzle(vec4(vec3(.004+white*.84),1.));
 }

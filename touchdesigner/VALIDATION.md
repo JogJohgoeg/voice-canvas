@@ -11,3 +11,5 @@ TouchDesigner 2025.33230, 1280×720, target 60 fps, this Mac.
 - Serialized audio buffers removed from the distributed `.toe`; expanded project and new source scanned for credential names and personal absolute paths, no matches. Gitleaks was not installed.
 
 Continuous sound-history revision: actual microphone 56.84 fps over 10 seconds, no operator errors. History texture shape 1×256×4 with changing features; shader and Script TOP cooked without errors. Envelope now uses current audio slice (12 ms attack / 90 ms release), FFT 1024 samples; these are configured analysis times, not measured end-to-end latency.
+
+Phase Field revision: microphone58.62fps over10s, no operator errors; native Esc returned to editor, F1 restored performance. Matrix reference checked against the artist website: it is a sound-installation series, not this shader.

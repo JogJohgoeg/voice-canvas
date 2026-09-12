@@ -1,8 +1,8 @@
 # Voice Canvas — TouchDesigner 原生声画
 
-**麦克风或录音 → 实时音频分析 → GPU 城市画面。**
+**麦克风或录音 → 实时音频分析 → 黑白空间线阵。**
 
-当前画面为原创程序化夜城：五层楼群、中央大道、稳定窗灯和透视铺面。声音推动视角与楼群高度，声音历史为不同城区提供错开的起伏。 无需浏览器、本地服务或模型。
+
 
 打开 `VoiceCanvas.toe`（TouchDesigner 2025.33230 构建）。选中 `/project1`，参数面板的 **Audio Visual** 页：
 
@@ -15,13 +15,15 @@
 
 首次打开默认使用麦克风。切换 Recording 可使用附带的 `test_signal.wav`，这是代码生成的八秒测试信号（静音、低频、高频、中频），不是音乐作品或录音素材。换成自己的录音即可演出。
 
-## 网络 / Native network
+## 当前画面 / Phase Field
 
-`microphone` / `recording` → `audio` Switch CHOP → `update` Execute DAT → `features` CHOP / `memory` Script TOP（声音特征历史） → `visual` GLSL TOP → `out1`。
+原创黑白相位线阵。当前声音推动整个平面的压缩、展开与剪切；约四秒的声音特征历史保留尾音和句子起伏。音量使用当前音频块与 12 ms 起音、90 ms 释放平滑，空间运动另外使用阻尼平滑。
 
-连续丝带记录约 4 秒的声音过程，新声音从右侧进入、历史向左流动。音量和低频改变波面高度、展开程度和弯曲；音色缓慢影响材质。没有闪烁点或爆闪。音量分析使用当前音频块，12 ms 起音平滑、90 ms 释放；频谱使用 1024 样本滚动 FFT。安静时运动减缓。
+参考 Ryoji Ikeda [Matrix](https://www.ryojiikeda.com/project/matrix/) 的空间和频率关系。原作是声音装置系列，本项目不是其复制品；没有使用原作音轨、影像，也不增加合成声音或频闪。
 
-1280×720、目标 60 fps。FFT 窗口约 23 ms（44.1 kHz）；设备缓冲和显示会额外增加延迟，未宣称端到端低于 30 ms。
+1280×720，目标60 fps。FFT1024样本约23 ms（44.1kHz），设备与显示另有延迟，未测量端到端延迟。
+
+`microphone` / `recording` → `audio` → `update` → `features` / `memory` → `visual` → `out1`。
 
 ## 修改与重建
 

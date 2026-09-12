@@ -40,7 +40,7 @@ try:
  for i,n in enumerate(c.children): n.nodeX=(i%5)*220; n.nodeY=-(i//5)*160
  w=op('/perform')
  w.par.winop=output; w.par.size='fill'; w.par.borders=False
- w.par.includedialog=False; w.par.alwaysontop=True
+ w.par.includedialog=False; w.par.alwaysontop=True; w.par.closeescape=True
  project.cookRate=60
  target=BASE/'VoiceCanvas.toe'
  if target.exists(): target.replace(BASE/'VoiceCanvas.previous.toe')

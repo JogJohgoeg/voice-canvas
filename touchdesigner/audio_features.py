@@ -10,9 +10,11 @@ last_source=None
 last_time=time.perf_counter()
 clock=0.
 carry=0.
+motion=0.
+velocity=0.
 
 def onFrameStart(frame):
- global history, smoothed, previous, last_source, last_time, clock, carry
+ global history, smoothed, previous, last_source, last_time, clock, carry, motion, velocity
  now=time.perf_counter(); dt=min(.1,max(.001,now-last_time)); last_time=now
  c=parent(); source=c.par.Source.eval()
  if source != last_source:
@@ -37,7 +39,14 @@ def onFrameStart(frame):
  while carry>=1/60:
   trace[0,:-1]=trace[0,1:]; trace[0,-1]=smoothed; carry-=1/60
  # Integrate motion speed: silence settles instead of continuing autonomous swirls.
- clock+=dt*(.035+smoothed[0]*1.5)
+ # Critically damped architectural motion preserves momentum through phrase endings.
+ remaining=dt
+ while remaining>0:
+  step=min(remaining,1/120); remaining-=step
+  velocity+=(81.*(smoothed[0]-motion)-18.*velocity)*step
+  motion+=velocity*step
+ clock+=dt*(.035+motion*1.5)
+ op('visual').par.vec1valuew=motion
  n=op('features')
  for i,v in enumerate(smoothed): n.par['value'+str(i)]=float(v)
  op('visual').par.vec1valuex=clock
