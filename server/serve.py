@@ -47,14 +47,14 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply({'status': BACKEND.name, 'backend': BACKEND.name, 'process_id': BACKEND.proc.pid if BACKEND.proc and BACKEND.proc.poll() is None else None})
         elif re.fullmatch(r'/blender_cache/[0-9a-f]{24}/loop\.webm',self.path):
             super().do_GET()
-        elif self.path.split('?')[0] in ('/','/index.html','/av_random.html','/app.js','/parser.mjs','/renderer.mjs','/audio.mjs','/particles.mjs','/sound.mjs','/works.mjs','/blender.mjs'):
+        elif self.path.split('?')[0] in ('/','/index.html','/av_random.html','/piano.html','/piano_projector.html','/app.js','/parser.mjs','/renderer.mjs','/audio.mjs','/particles.mjs','/sound.mjs','/works.mjs','/blender.mjs'):
             super().do_GET()
         else:
             self.send_error(404)
     def do_POST(self):
         if not self.local_request():
             return self.reply({'error': 'Local requests only'},403)
-        if self.path not in ('/api/scene','/api/blender'):
+        if self.path not in ('/api/scene','/api/blender','/api/section'):
             return self.reply({'error':'Not found'},404)
         try:
             length = int(self.headers.get('Content-Length','0'))
@@ -66,6 +66,10 @@ class Handler(SimpleHTTPRequestHandler):
                 if not isinstance(data,dict) or not isinstance(data.get('scene'),dict):
                     raise ValueError('Invalid scene')
                 return self.reply(BACKEND.blender_scene(data['scene']))
+            if self.path == '/api/section':
+                if not isinstance(data,dict) or not isinstance(data.get('piece'),str) or not 0<len(data['piece'])<=300:
+                    raise ValueError('Invalid piece name')
+                data={**data,'transcript':'','scene':{}}
             if not isinstance(data, dict) or not isinstance(data.get('transcript'), str) or len(data['transcript']) > 4000 or not isinstance(data.get('scene'),dict):
                 raise ValueError('Invalid transcript or scene')
         except (ValueError, TypeError, AttributeError, OverflowError, OSError):
@@ -76,7 +80,8 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Content-Type','application/x-ndjson; charset=utf-8')
         self.end_headers()
         try:
-            for event in BACKEND.generate(data['transcript'],data['scene']):
+            stream=BACKEND.section_brief(data['piece'],data.get('style','fusion')) if self.path=='/api/section' else BACKEND.generate(data['transcript'],data['scene'])
+            for event in stream:
                 self.wfile.write((json.dumps(event,ensure_ascii=False)+'\n').encode())
                 self.wfile.flush()
         except (BrokenPipeError, ConnectionResetError):

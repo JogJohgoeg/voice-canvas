@@ -19,3 +19,11 @@
 - Matched visual breathing to the synth LFO and scheduled reform gestures from the particle phase.
 - Prewarm all default Fusion families; preserve the single accent when choosing cached loops.
 - Live optional GPT-6 Fusion probe completed in 15.24 seconds with 11 progressive previews.
+
+## 2026-09-12 — Piano mode
+
+- Added MIDI/audio musical features, six adjustable Fusion/Moyers mappings and saved piece presets.
+- Added fixed-step Zero-AI performance, fullscreen and independent projector output.
+- Added MIDI file playback, two public-domain Debussy excerpts and an original demo GIF.
+- Added optional GPT-6 section briefs and setlist preloading, with local fallback.
+- Documented verified performance research, musical heuristics and latency boundaries.

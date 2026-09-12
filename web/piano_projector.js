@@ -1,0 +1,4 @@
+import {particleField} from './particles.mjs';
+let field=particleField(document.getElementById('stage'));
+addEventListener('message',event=>{if(event.source!==opener||event.origin!==location.origin||event.data?.type!=='piano-frame')return;const p=event.data,video=document.getElementById('loop');if(p.loop&&new URL(p.loop.src).origin===location.origin){if(video.getAttribute('src')!==p.loop.src){video.src=p.loop.src;video.play().catch(()=>{});}if(video.readyState>=2&&Math.abs(video.currentTime-p.loop.time)>.2)video.currentTime=p.loop.time;}else{video.pause();video.removeAttribute('src');}if(field?.needsRebuild){field.canvas.remove();field=particleField(document.getElementById('stage'));}field?.draw(p.time,p.dt,p.scene,p.audio,!!p.loop,p.evolution,p.style);document.getElementById('hint').hidden=true;});
+document.onclick=()=>document.documentElement.requestFullscreen?.().catch(()=>{});

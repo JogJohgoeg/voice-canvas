@@ -27,3 +27,13 @@ with patch.dict(os.environ,{},clear=True):
         assert list(backend.generate('moon',{}))[-1]['backend']=='codex-exec:gpt-6-astra'
 backend.close()
 print('HTML sanitization, streaming and fallback passed (offline)')
+backend=SceneBackend()
+with patch.object(backend,'app_server',return_value=iter(['{"description":"water ink","family":1,"palette":["#2859cd","#657075"]}'])) as call:
+    result=list(backend.section_brief('Ravel Ondine'))[-1]
+    assert result['brief']['family']==1
+    assert 'Return ONLY JSON' in call.call_args.args[2]
+with patch.object(backend,'app_server',return_value=iter(['{"description":"bad","family":9,"palette":["red","blue"]}'])):
+    try:list(backend.section_brief('bad'));raise AssertionError('Invalid brief accepted')
+    except ValueError:pass
+backend.close()
+print('Section brief JSON instructions and validation passed')

@@ -33,7 +33,7 @@ def specification(scene):
             if isinstance(tint,str) and len(tint)==7 and tint[0]=='#' and all(c in '0123456789abcdefABCDEF' for c in tint[1:]):colours=[tint,tint]
     seed = int(scene.get('variation', {}).get('seed', 317)) % (2**32)
     mode='fusion' if scene.get('style')=='fusion' else 'moyers'
-    if mode=='fusion':colours=['#e5b433' if seed%2 else '#2859cd','#657075']
+    if mode=='fusion':colours=[colours[0] if scene.get('piano') else '#e5b433' if seed%2 else '#2859cd','#657075']
     mood = scene.get('audioMood', {})
     return {'style':mode,'family':max(0,min(7,family)), 'palette':colours, 'seed':seed,
             'mood':{k:max(0,min(1,float(mood.get(k,0)))) for k in ('level','warmth')}}

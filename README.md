@@ -71,14 +71,32 @@ python3 build/build.py
 node build/test_parser.mjs
 node build/test_audio.mjs
 node build/test_seed.mjs
+node build/test_music.mjs
 python3 build/test_backend.py
 python3 build/test_blender.py
 ```
 
-`web/` contains editable modules; `server/` the optional backend; `build/` the tiny module bundler; `docs/` the generated Pages site and original screenshots. Rebuild after changing modules. Pages publishes `main:/docs`. `web/av_random.html` and both Pages entries have all JavaScript/CSS inline. No package manager is needed. With an isolated Chrome debug session on port 9347, `node build/test_browser.mjs` checks the actual static pages, sound activation, pause and seed restoration. Set `VOICE_CDP` to use a different local debug endpoint.
+`web/` contains editable modules; `server/` the optional backend; `build/` the tiny module bundler; `docs/` the generated Pages site and original screenshots. Rebuild after changing modules. Pages publishes `main:/docs`. `web/av_random.html` and both Pages entries have all JavaScript/CSS inline. No package manager is needed. With an isolated Chrome debug session on port 9347, `node build/test_browser.mjs` checks the actual static pages, sound activation, pause and seed restoration. `node build/test_piano_browser.mjs` adds MIDI interface events, real synthetic audio analysis, sustain, projector, presets and Zero-AI network isolation. Set `VOICE_CDP` to use a different local debug endpoint.
 
 ## Credits / 致谢
 
 Inspired by [Tim Moyers' audiovisual and live-performance work](https://timmoyers.com/audiovisual--live-performance.html), Vincent van Gogh's paintings, and Chinese ink wash. These are original algorithmic interpretations, with no copied assets, audio samples, endorsement or affiliation. Additional visual research and links are listed in [the style catalog](docs/STYLE_CATALOG.md). All sound is synthesized locally. MIT licensed.
 
 灵感来自 Tim Moyers 的视听现场作品、梵高和中国水墨；全部由原创代码重新表达，不复制作品素材，不代表与艺术家有关联。
+
+
+## For pianists / 钢琴演奏者
+
+[Open Piano Mode](https://jogjohgoeg.github.io/voice-canvas/piano.html). **Zero-AI is ON by default**. Connect a USB MIDI piano and click Connect MIDI, or choose microphone/line-in for an acoustic instrument. The app receives notes, velocity and CC64 sustain; it never sends commands to the piano. Standard MIDI exposed by a Disklavier/Spirio interface works like another input; proprietary transport integration is not included.
+
+The six sliders control harmony/palette, tension/symmetry, dynamics/marks, register/placement, pedal/wash and phrase/breathing. Save these with a seed as a named piece preset in this browser, or export JSON. Key, chord, cadence, acoustic polyphony and acoustic sustain are estimates. MIDI sustain is direct controller data. Details and performance inspirations are in [RESEARCH.md](docs/RESEARCH.md).
+
+No piano required: play either bundled **30-second Debussy excerpt**, upload a type 0/1 PPQ `.mid` file, or use computer keys **A W S E D F T G Y H U J K**. The simple audition synth defaults OFF; enable Audition to hear a demonstration. Space starts/stops the demo. **P** hides panels/fullscreens; Projector opens an independent render window that can be moved to a second display and clicked for fullscreen.
+
+Uncheck Zero-AI to enable optional tiers, enter one piece/section per setlist line, and click GPT-6 Preload **before** the recital. Prepared briefs provide a form family and palette; Next changes section immediately. Without a backend the built-in Liszt water, Ravel Ondine and Scriabin flight/light interpretations keep working. Zero-AI cancels pending scene requests, removes generated layers and uses local section plans; other pages' background jobs are unaffected.
+
+钢琴模式默认 Zero-AI，使用 MIDI、种子和本地规则。六组映射可保存为作品预设，谱单可在演出前异步预加载，演出时切段不等模型。无钢琴时可播放两个德彪西公有领域片段、上传 MIDI，或用电脑键盘试奏。示范声音默认关闭。投影窗口与主窗口共享同一组演奏特征。
+
+Measured in Chrome with injected MIDI events: **7.9–22.1 ms event-to-render**, approximately 60 fps. This excludes physical device/display latency; hardware piano tests remain to be done. Zero-AI reproduces a fixed-step feature/parameter trajectory from the same MIDI, seed, mapping settings and section sequence; GPU/viewport differences and live audio may change pixels. Audio analysis has an 8192-sample window and does not share the MIDI latency claim. Standard MIDI type 2 and SMPTE timing are explicitly rejected.
+
+![Piano mode, original renderer recording](docs/screenshots/piano-demo.gif)

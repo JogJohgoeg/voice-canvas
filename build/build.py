@@ -12,7 +12,7 @@ def bundle(template,entry):
         pattern=r"import\s*\{([^}]+)\}\s*from\s*['\"]\./([^'\"]+)['\"];?"
         for match in re.finditer(pattern,source):visit(match[2])
         source=re.sub(pattern,lambda m:'const {'+m[1]+"}=__modules['"+m[2]+"'];",source)
-        exports=re.findall(r'export\s+(?:function|const|let|class)\s+(\w+)',source)
+        exports=re.findall(r'export\s+(?:async\s+)?(?:function|const|let|class)\s+(\w+)',source)
         source=re.sub(r'\bexport\s+','',source)
         chunks.append("__modules['"+name+"']=(()=>{\n"+source+'\nreturn {'+','.join(exports)+'};})();')
     visit(entry)
@@ -21,8 +21,8 @@ def bundle(template,entry):
 if __name__=='__main__':
     (ROOT/'docs').mkdir(exist_ok=True)
     (ROOT/'docs/.nojekyll').touch()
-    for template,entry,target in [('index.html','app.js','index.html'),('av_random.template.html','av_random.js','av_random.html')]:
+    for template,entry,target in [('index.html','app.js','index.html'),('av_random.template.html','av_random.js','av_random.html'),('piano.template.html','piano.js','piano.html'),('piano_projector.template.html','piano_projector.js','piano_projector.html')]:
         html=bundle(template,entry)
         (ROOT/'docs'/target).write_text(html)
-        if target=='av_random.html':(WEB/target).write_text(html)
+        if target!='index.html':(WEB/target).write_text(html)
         print(target,len(html.encode()),'bytes')

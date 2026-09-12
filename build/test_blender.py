@@ -32,3 +32,5 @@ with tempfile.TemporaryDirectory() as folder:
         assert worker.request({'style':'fusion','variation':{'seed':318}})['status']=='queued'
         assert worker.request({'style':'fusion','variation':{'seed':319}})['approximate'] is True
 print('Cached Fusion fallback keeps the requested accent and accepts another matching seed')
+assert specification({'style':'fusion','piano':True,'workStyle':{'palette':['#123456','#654321']}})['palette']==['#123456','#657075']
+print('Piano section palette is retained by optional Fusion renders')

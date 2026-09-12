@@ -1,4 +1,7 @@
-export function formPlan(scene){
+<!doctype html><html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Piano projector</title><style>body{margin:0;background:#000;color:#aaa;font:16px system-ui}#stage{position:relative;width:100vw;height:100vh}canvas,video{position:absolute;inset:0;width:100%;height:100%}canvas{z-index:2}video{object-fit:contain;z-index:1}#hint{position:absolute;bottom:20px;left:20px;z-index:3;pointer-events:none}</style><div id="stage"><video id="loop" muted loop playsinline></video></div><p id="hint">Move this window to your projector. Click for fullscreen.<br>等待钢琴画面 · 点击全屏</p><script>
+const __modules={};
+__modules['particles.mjs']=(()=>{
+function formPlan(scene){
  const familyFor=kind=>['sun','fire','heart'].includes(kind)?0:['sea','rain','snow','fish','cloud'].includes(kind)?1:['tree','mountain','house'].includes(kind)?2:['star','moon'].includes(kind)?3:4;
  const groups=new Map();for(const o of scene.objects){const family=familyFor(o.kind);const key=family+':'+(o.tint??'');const group=groups.get(key)??{family,tint:o.tint,weight:0,seed:o.seed??0};group.weight++;if(o.kind==='abstract'){group.abstract=true;group.seed=o.seed;}groups.set(key,group);}
  if(scene.weather&&![...groups.values()].some(g=>g.family===1))groups.set(1,{family:1,weight:2,seed:0});
@@ -6,13 +9,13 @@ export function formPlan(scene){
  // Preserve two principal families, plus a sparse space layer using the first family's palette.
  return [...groups.values()].sort((a,b)=>(a.family===3)-(b.family===3)).slice(0,3);
 }
-export function particleColour(group,warmth=0){
+function particleColour(group,warmth=0){
  const tint=group.tint;if(tint){const channels=[1,3,5].map(i=>parseInt(tint.slice(i,i+2),16)/255);if(channels.every(Number.isFinite)){const max=Math.max(...channels);return channels.map(c=>max?c/max:c);}}
  if(group.abstract){const hue=group.seed%360,x=1-Math.abs(hue/60%2-1);return [[1,x,0],[x,1,0],[0,1,x],[0,x,1],[x,0,1],[1,0,x]][Math.floor(hue/60)];}
  return group.family===0?[1,.08+warmth*.2,.025]:group.family===2?[.75,.8,.83]:[.035,.4+warmth*.25,1];
 }
 // GPU point field: mirrored organic membranes, a low-resolution glow pass, bounded adaptive density.
-export function particleField(stage){
+function particleField(stage){
  const canvas=document.createElement('canvas');canvas.id='particles';canvas.setAttribute('aria-label','声驱动粒子场 / Audio-reactive particle field');stage.append(canvas);
  const gl=canvas.getContext('webgl',{alpha:true,antialias:false,premultipliedAlpha:false,preserveDrawingBuffer:true});
  if(!gl){canvas.remove();return null;}const instances=gl.getExtension('ANGLE_instanced_arrays');
@@ -81,3 +84,13 @@ export function particleField(stage){
  }
  return {canvas,draw,get available(){return !lost},get needsRebuild(){return restored}};
 }
+
+return {formPlan,particleColour,particleField};})();
+__modules['piano_projector.js']=(()=>{
+const {particleField}=__modules['particles.mjs'];
+let field=particleField(document.getElementById('stage'));
+addEventListener('message',event=>{if(event.source!==opener||event.origin!==location.origin||event.data?.type!=='piano-frame')return;const p=event.data,video=document.getElementById('loop');if(p.loop&&new URL(p.loop.src).origin===location.origin){if(video.getAttribute('src')!==p.loop.src){video.src=p.loop.src;video.play().catch(()=>{});}if(video.readyState>=2&&Math.abs(video.currentTime-p.loop.time)>.2)video.currentTime=p.loop.time;}else{video.pause();video.removeAttribute('src');}if(field?.needsRebuild){field.canvas.remove();field=particleField(document.getElementById('stage'));}field?.draw(p.time,p.dt,p.scene,p.audio,!!p.loop,p.evolution,p.style);document.getElementById('hint').hidden=true;});
+document.onclick=()=>document.documentElement.requestFullscreen?.().catch(()=>{});
+
+return {};})();
+</script></html>
