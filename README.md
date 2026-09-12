@@ -17,3 +17,11 @@ A direct GLM-4.7-Flash probe returned a validated coordinated plan in 2.57 secon
 For your own deployment: `wrangler deploy --config cloud/wrangler.jsonc`, then `wrangler secret put PROVIDER_SECRET --config cloud/wrangler.jsonc`. The selected model is a non-secret variable in that config. The original local Codex backend remains available with `python3 run.py`, but is optional. Code-generated browser piano voices are not sampled recordings; hardware latency remains unmeasured.
 
 The underlying repertoire, renderer presets, GPU gallery and optional Blender implementation remain in the project, without separate UI entry points. [Repertoire sources and licences](docs/REPERTOIRE.md), [research credits](docs/RESEARCH.md). Visual inspiration: Tim Moyers, Van Gogh, Chinese ink wash and Monet; original code-generated assets. Code MIT; data retain their documented licences.
+
+## Narrative / 叙事
+
+Describe **“Glass Mishima，叙事风格”** for sparse procedural figures and floating movement titles on a pale stage. The model can choose it; Glass library presets also default to it. The current one-prompt surface remains unchanged—no new menu is exposed.
+
+For deterministic instrument-driven visuals without a model, enter **“Glass Mishima 零AI叙事”** (MIDI input), or **“Glass Mishima 零AI叙事 麦克风”** (acoustic input). This visual mode does not synthesize or distribute Glass’s score; play your instrument. **“开启摄像头” / “关闭摄像头”** controls the optional performer view; **“投影”** opens visuals only. Camera stays local and is not sent to GLM.
+
+Add **“诗：”** followed by your text; Shift+Enter inserts line breaks. The implementation also stores poem/program text in the existing piece preset. The seven Mishima section labels advance on musical phrases/cadences or MIDI markers. See [research credits](docs/RESEARCH.md).

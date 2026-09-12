@@ -1,7 +1,7 @@
 import {instructions} from './instructions.mjs';
 export function validate(p){
  const num=(v,a,b)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<a||v>b)throw Error('Invalid score number');return v;};
- if(!p||typeof p.description!=='string'||!['fusion','moyers','vangogh','ink','monet'].includes(p.style)||!Number.isInteger(p.family)||p.family<0||p.family>4)throw Error('Invalid visual plan');
+ if(!p||typeof p.description!=='string'||!['fusion','moyers','vangogh','ink','monet','narrative'].includes(p.style)||!Number.isInteger(p.family)||p.family<0||p.family>4)throw Error('Invalid visual plan');
  const tempo=num(p.tempo,40,120),beats=num(p.beats,16,32);
  if(!Array.isArray(p.palette)||p.palette.length!==2||!p.palette.every(c=>/^#[a-f\d]{6}$/i.test(c)))throw Error('Invalid palette');
  if(!Array.isArray(p.notes)||p.notes.length<1||p.notes.length>128)throw Error('Invalid notes');

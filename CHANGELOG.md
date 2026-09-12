@@ -1,3 +1,10 @@
+## 2026-09-12 — Narrative piano visuals
+
+- Added a sparse pale-stage renderer with twelve original cuboids per figure, fine text connectors, seeded crowd motion, pedal afterimages and silence settling; Glass defaults to Narrative.
+- Piece text/poem persistence, seven Mishima labels and MIDI marker timing feed phrase/cadence transitions. The renderer also works without model calls through the one-prompt Zero-AI command.
+- Explicit camera on/off provides a letterboxed performer view above the scene; projector uses visual composition only. Camera frames never leave the browser.
+- Added primary-reference credits and tests for default selection, MIDI markers, seeded pixels, quiet motion and mocked camera lifecycle.
+
 ## 2026-09-12 — Cloud GLM director
 
 - Cloudflare Worker serves the show and calls GLM-4.7-Flash; no local process or Codex login is required by the cloud page. GitHub Pages routes its director requests to the cloud API.
