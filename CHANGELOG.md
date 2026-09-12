@@ -1,3 +1,7 @@
+## 2026-09-12 — Automatic world tour
+
+- The default camera now completes panoramic turns and moves along a gentle curved path without input. Dynamics adjust travel speed; cadences smoothly redirect the tour. No new worlds or model requests are needed.
+
 ## 2026-09-12 — Saved background playback
 
 - Open directly into the cached Opening world; first scene click starts an already-generated original 16-beat piano loop. No new model call or world generation is needed.

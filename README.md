@@ -30,4 +30,4 @@ Add **“诗：”** followed by your text; Shift+Enter inserts line breaks. The
 
 ## World / 世界
 
-**“Glass Mishima Opening World”** plays in a pre-generated, navigable Marble environment. Music moves the camera and changes exposure, haze and particles; the world stays fixed. Draft and full-quality preparation run offline with an environment-only credential and a persistent 12-draft / 4-full budget. Cached playback needs no World Labs key. Missing worlds fall back to Fusion. [Preparation, credits and rendering details](docs/WORLDS.md).
+**“Glass Mishima Opening World”** plays in a pre-generated, navigable Marble environment. The camera automatically looks around and travels slowly through the world. Music changes tour speed, viewing direction, exposure, haze and particles; the world stays fixed. Draft and full-quality preparation run offline with an environment-only credential and a persistent 12-draft / 4-full budget. Cached playback needs no World Labs key. Missing worlds fall back to Fusion. [Preparation, credits and rendering details](docs/WORLDS.md).
