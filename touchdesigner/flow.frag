@@ -10,7 +10,7 @@ float surface(vec2 p,float t,float force){
  float waves=sin(p.x*5.4+p.y*2.1-t*.68)
              +.55*sin(p.y*7.3-p.x*2.7+t*.51)
              +.28*sin((p.x+p.y)*12.2-t*.32);
- return dome*.50+waves*(.045+force*.115)*envelope;
+ return dome*.50+waves*(.055+force*.30)*envelope;
 }
 vec3 studio(vec3 r){
  vec3 base=mix(vec3(.045,.054,.069),vec3(.30,.34,.38),smoothstep(-.8,.8,r.y));
@@ -23,14 +23,14 @@ void main(){
  vec2 uv=vUV.st;
  float t=uScene.x;
  float force=clamp(uScene.w*.75+uAudio.x*.25,0.,1.);
- float lift=sqrt(force);
+ float lift=pow(force,.38);
  vec2 screen=(uv-.5)*vec2(uScene.z,1.);
- screen-=vec2(sin(t*.21)*.04,cos(t*.16)*.015);
- float angle=sin(t*.15)*.20+lift*.13;
+ screen-=vec2(sin(t*.21)*(.025+lift*.06),cos(t*.16)*(.015+lift*.035));
+ float angle=sin(t*.35)*(.15+lift*.48)+lift*.26;
  mat2 rotation=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
- vec2 p=rotation*screen/vec2(.64+lift*.10,.36+lift*.035);
+ vec2 p=rotation*screen/vec2(.60+lift*.13,.31+lift*.095);
  float a=atan(p.y,p.x);
- float boundary=1.+(.025+lift*.055)*sin(a*3.+t*.24)+.022*sin(a*5.-t*.18);
+ float boundary=1.+(.025+lift*.16)*sin(a*3.+t*.24)+(.015+lift*.06)*sin(a*5.-t*.28);
  p/=boundary;
  float r=length(p);
  float shadow=exp(-pow(length((screen-vec2(.03,-.08))/vec2(.68,.35)),4.));
