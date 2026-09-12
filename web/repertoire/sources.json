@@ -1,0 +1,38 @@
+[
+  {
+    "name": "MAESTRO v3",
+    "url": "https://magenta.tensorflow.org/datasets/maestro",
+    "license": "CC-BY-NC-SA-4.0",
+    "policy": "Local only; checksum-verified MIDI archive"
+  },
+  {
+    "name": "Mutopia",
+    "url": "https://www.mutopiaproject.org/legal.html",
+    "license": "Per item: Public Domain / CC-BY / CC-BY-SA",
+    "policy": "Only public-domain MIDI files included in curated subset"
+  },
+  {
+    "name": "OpenScore Lieder",
+    "url": "https://github.com/OpenScore/Lieder",
+    "license": "CC0-1.0",
+    "policy": "Voice and piano scores; score links when no MIDI available"
+  },
+  {
+    "name": "Classical Piano MIDI Page / Bernd Krueger",
+    "url": "https://www.piano-midi.de/",
+    "license": "CC-BY-SA-3.0-DE",
+    "policy": "Author licence verified at http://piano-midi.de/copy.htm; MIDI cached locally with attribution"
+  },
+  {
+    "name": "KernScores / Beethoven piano sonatas",
+    "url": "https://github.com/craigsapp/beethoven-piano-sonatas",
+    "license": "Per-file rights require verification",
+    "policy": "Source links; conversion requires music21 or humlib and licence review"
+  },
+  {
+    "name": "IMSLP",
+    "url": "https://imslp.org/wiki/Category:Scores_featuring_the_piano",
+    "license": "Per edition and jurisdiction",
+    "policy": "12 individually reviewed public-domain piano editions; official PDF flow links; no gated file downloads"
+  }
+]

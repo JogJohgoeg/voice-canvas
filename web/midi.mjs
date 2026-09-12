@@ -13,7 +13,7 @@ export function readMidi(buffer){
    else throw Error('Unsupported MIDI status');if(p>end)throw Error('MIDI event exceeds track');if(raw.length>250000)throw Error('Too many MIDI events');
   }
  }
- raw.sort((a,b)=>a.tick-b.tick||a.order-b.order);let tempo=500000,tick=0,time=0;const events=[];for(const event of raw){time+=(event.tick-tick)*tempo/division/1e6;tick=event.tick;if(event.tempo){tempo=event.tempo;continue;}events.push({time,data:event.data});}
- return {events,duration:time,format,division};
+ raw.sort((a,b)=>a.tick-b.tick||a.order-b.order);let tempo=500000,tick=0,time=0;const events=[],tempos=[{time:0,bpm:120}];for(const event of raw){time+=(event.tick-tick)*tempo/division/1e6;tick=event.tick;if(event.tempo){tempo=event.tempo;tempos.push({time,bpm:60000000/tempo});continue;}events.push({time,data:event.data});}
+ return {events,duration:time,format,division,tempos};
 }
 export async function midiAccess(onMessage,onPorts){if(!navigator.requestMIDIAccess)throw Error('Web MIDI unavailable; use a MIDI file or audio input');const access=await navigator.requestMIDIAccess({sysex:false});const refresh=()=>{for(const port of access.inputs.values())port.onmidimessage=e=>onMessage([...e.data],e.timeStamp);onPorts([...access.inputs.values()].map(p=>({id:p.id,name:p.name,state:p.state})));};access.onstatechange=refresh;refresh();return ()=>{access.onstatechange=null;for(const port of access.inputs.values())port.onmidimessage=null;};}

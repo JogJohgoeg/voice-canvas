@@ -21,10 +21,19 @@ def bundle(template,entry):
 if __name__=='__main__':
     (ROOT/'docs').mkdir(exist_ok=True)
     (ROOT/'docs/.nojekyll').touch()
-    for template,entry,target in [('voice.template.html','app.js','voice.html'),('av_random.template.html','av_random.js','av_random.html'),('piano.template.html','piano.js','piano.html'),('piano_projector.template.html','piano_projector.js','piano_projector.html')]:
-        html=bundle(template,entry)
-        (ROOT/'docs'/target).write_text(html)
-        if target!='index.html':(WEB/target).write_text(html)
-        print(target,len(html.encode()),'bytes')
+    html=bundle('av_random.template.html','av_random.js')
+    redirect='<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=./index.html"><title>Voice Canvas</title><a href="./index.html">Open Voice Canvas</a>'
+    for directory in [WEB,ROOT/'docs']:
+        (directory/'index.html').write_text(html)
+        for name in ['av_random','piano','piano_projector','voice']:(directory/(name+'.html')).write_text(redirect)
+    print('index.html',len(html.encode()),'bytes; four legacy redirects')
 
-    for directory in [WEB,ROOT/"docs"]:(directory/"index.html").write_text((directory/"av_random.html").read_text())
+    import shutil
+    repertoire=WEB/'repertoire'
+    if repertoire.exists():
+        import json
+        entries=json.loads((repertoire/'index.json').read_text())['items']
+        if any(p['id'].startswith('maestro-') or 'NC' in p['license'] for p in entries):raise ValueError('Run export_repertoire.py to exclude non-commercial data before a public build')
+        (ROOT/'docs/repertoire').mkdir(parents=True,exist_ok=True)
+        for name in ['index.json','sources.json']:shutil.copyfile(repertoire/name,ROOT/'docs/repertoire'/name)
+        shutil.copytree(repertoire/'curated',ROOT/'docs/repertoire/curated',dirs_exist_ok=True)

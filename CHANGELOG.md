@@ -1,3 +1,10 @@
+## 2026-09-12 — Consolidated two-mode performer
+
+- One home page: browser piano (default) or opt-in MIDI instrument output; browser synthesis mutes in instrument mode. Stop and mode changes release MIDI notes and pedal. Incoming MIDI is not echoed back.
+- Main controls reduced; one collapsed Advanced drawer. Legacy entry pages redirect. Projector reuses the main compositor stream; removed independent voice/piano/projector entry engines.
+- Expanded public repertoire: 2,590 entries, 1,073 fingerprints, 33 cleared files (455,596 bytes). Added 331 Krueger records and 12 IMSLP editions; MAESTRO remains local. Downloaded MIDI analysis: 2,349 successful, zero parse failures; two source URLs returned 404.
+- Regression covers both outputs, default silence, mode muting, MIDI panic, redirects, catalogue filters and sequential setlists. Physical MIDI hardware remains untested.
+
 ## 2026-09-12 — Unified automatic performer
 
 - Made the integrated performer workbench the home page; kept independent voice and piano pages.
@@ -59,3 +66,10 @@
 - Compile and three-frame smoke checks run in a worker; completed draw budget is below 6 ms with resolution degradation and rejection.
 - Added MaleCNS v1.0 visual-to-descending graph: 317 nodes, 20,937 weighted edges, 318 GF-target edges, labelled estimated spatial layout.
 - Included plugin/connectome layers in projector and recording.
+
+## 2026-09-12 — Searchable piano repertoire
+
+- Indexed 3,523 local entries across MAESTRO, Mutopia, OpenScore and KernScores; analysed 1,306 MIDI files.
+- Published 2,247 catalogue entries, 30 public-domain MIDI pieces and three CC0 MusicXML files; MAESTRO stays local.
+- Added composer/title/opus search, era/mood/duration filters, audition, sequential setlists and saved library IDs to both workbench and piano analysis.
+- Added reproducible download/export/fingerprint scripts, per-source licence status and a strict public subset size check.

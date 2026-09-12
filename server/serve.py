@@ -14,6 +14,7 @@ ALLOWED = {'127.0.0.1:8765', 'localhost:8765'}
 SCHEME = 'http'
 MODEL_SLOT = threading.BoundedSemaphore(1)
 
+from repertoire_service import repertoire_midi
 from backend import SceneBackend
 BACKEND = SceneBackend()
 
@@ -43,8 +44,16 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if not self.local_request():
             self.reply({'error':'Local requests only'},403)
+        elif re.fullmatch(r'/api/repertoire/[A-Za-z0-9_-]+',self.path):
+            try:
+                body=repertoire_midi(ROOT,self.path.rsplit('/',1)[1])
+                self.send_response(200);self.send_header('Content-Type','audio/midi');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
+            except Exception as error:
+                self.reply({'error':str(error)},400)
         elif self.path == '/api/status':
             self.reply({'status': BACKEND.name, 'backend': BACKEND.name, 'process_id': BACKEND.proc.pid if BACKEND.proc and BACKEND.proc.poll() is None else None})
+        elif self.path=='/repertoire/index.json' and (ROOT/'repertoire/local/index.json').is_file():
+            self.path='/repertoire/local/index.json';super().do_GET()
         elif re.fullmatch(r'/repertoire/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_.-]+\.(?:json|mid|midi)',self.path) and '..' not in self.path and (ROOT/self.path.lstrip('/')).resolve().is_relative_to((ROOT/'repertoire').resolve()):
             super().do_GET()
         elif re.fullmatch(r'/blender_cache/[0-9a-f]{24}/loop\.webm',self.path):
