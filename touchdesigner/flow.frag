@@ -1,45 +1,36 @@
 uniform vec4 uAudio;
 uniform vec4 uScene;
 out vec4 fragColor;
-mat2 rot(float a){return mat2(cos(a),-sin(a),sin(a),cos(a));}
+vec4 past(float x){return texture(sTD2DInputs[0],vec2(clamp(x*1.08,0.,1.),.5));}
 void main(){
- vec2 p=(vUV.st-.5)*vec2(uScene.z,1.);
- float t=uScene.x, energy=pow(clamp(uAudio.x,0.,1.),.65);
- float hit=uAudio.w, bass=uAudio.y;
- p=rot(.10*sin(t*.19))*p;
- vec3 col=vec3(.002,.004,.012);
- // Sweeping nested ribbons: spacious in silence, strongly folded by live sound.
- for(int i=0;i<12;i++){
-  float f=float(i), depth=f/11.;
-  vec2 q=p-vec2(.035*sin(t*.31+f*.36),.022*cos(t*.27+f*.4));
-  q.x*=1.05+.18*sin(t*.15+depth);
-  float a=atan(q.y,q.x), r=length(q);
-  float twist=a+t*.13+depth*1.7;
-  float fold=sin(twist*3.+t*.31)*(.018+energy*.045)
-            +sin(twist*5.-t*.22+f*.2)*(.010+energy*.022);
-  float radius=.14+depth*.25+.025*sin(t*.45+depth*3.)+energy*.07+bass*.04;
-  float d=r-radius-fold;
-  float flow=a*(52.+f*4.)+sin(r*28.-t*.65+f)*2.8-t*.6;
-  float marks=pow(.5+.5*sin(flow),7.);
-  float width=.0018+energy*.0035+hit*.0015;
-  float core=exp(-d*d/(width*width));
-  float halo=exp(-abs(d)*65.)*.14;
-  float side=.5+.5*sin(a*2.+depth*4.+t*.12);
-  vec3 cyan=vec3(.025,.48,.95), violet=vec3(.30,.06,.80), gold=vec3(1.,.37,.035);
-  vec3 tint=mix(cyan,violet,side*.55);
-  float warmth=smoothstep(.42,.95,side+uAudio.z*.30+hit*.17);
-  tint=mix(tint,gold,warmth);
-  col+=tint*(core*(.17+marks*.83)+halo)*(.36+energy*1.8)*uScene.y;
+ vec2 uv=vUV.st;
+ float x=uv.x, t=uScene.x;
+ vec4 h=past(x), before=past(x-.012), after=past(x+.012);
+ float e=pow(max(h.x,0.),.65), slope=(after.x-before.x)*2.;
+ // A continuous four-second sound landscape: new sound enters from the right.
+ float carrier=sin(x*9.-t*.5)*.45+sin(x*17.+t*.3)*.2;
+ float contour=(h.x-.20)*.26+carrier*(.018+e*.16)+h.y*.10;
+ vec3 col=vec3(.006,.012,.025);
+ for(int i=0;i<8;i++){
+  float f=float(i), layer=f/7.;
+  vec4 delayed=past(x-layer*.018);
+  float voice=pow(max(delayed.x,0.),.65);
+  float bend=sin(x*10.+layer*2.-t*.45)*(.012+voice*.055);
+  float center=.5+contour+(layer-.5)*(.085+voice*.26)+bend;
+  float distance=uv.y-center;
+  float width=.0025+voice*.003+layer*.001;
+  float line=exp(-distance*distance/(width*width));
+  // Translucent continuous fabric, no beads, stippling or flash modulation.
+  float silk=exp(-abs(distance)*55.)*.17;
+  float highlight=.55+.45*sin(x*5.+layer*3.+slope);
+  vec3 tint=mix(vec3(.045,.48,.65),vec3(.96,.53,.17),layer);
+  tint=mix(tint,vec3(.40,.60,.72),h.z*.23);
+  col+=tint*(line*.58+silk)*(.65+highlight*.45)*uScene.y;
  }
- // Small scattered lights follow a curved field, with onset-driven outward flights.
- for(int i=0;i<24;i++){
-  float f=float(i), a=f*2.39996+t*.085;
-  float r=.23+.20*fract(f*.618)+hit*.10;
-  vec2 pos=vec2(cos(a)*1.35,sin(a))*r;
-  float d=length(p-pos);
-  col+=vec3(.12,.45,.8)*exp(-d*d/(.000008+hit*.000045))*(.25+hit*1.4);
- }
- float vignette=1.-smoothstep(.43,1.,length(p));
- col*=vignette;
+ // Soft reflection follows the same recorded contour rather than a free-running effect.
+ float reflection=abs(uv.y-(.27-contour*.32));
+ col+=vec3(.04,.15,.21)*exp(-reflection*22.)*(.3+e*.3);
+ float edge=smoothstep(0.,.08,x)*smoothstep(0.,.08,1.-x);
+ col*=edge;
  fragColor=TDOutputSwizzle(vec4(1.-exp(-col),1.));
 }

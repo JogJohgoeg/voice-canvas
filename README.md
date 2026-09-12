@@ -4,7 +4,7 @@
 
 打开 [`touchdesigner/VoiceCanvas.toe`](touchdesigner/VoiceCanvas.toe)，在 `/project1` 的 **Audio Visual** 参数页选择 **Microphone / 麦克风** 或 **Recording / 录音**。F1 进入演出，Esc 返回编辑。默认使用麦克风；也可选择自己的录音或附带测试信号。
 
-声音直接决定形体膨胀、笔触厚度、蓝黄色彩和瞬态涟漪。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
+连续波面呈现声音的起音、持续、转折与收尾，保留约四秒过程；不使用闪烁点。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
 
 ![Native GPU audio visual](touchdesigner/preview.png)
 

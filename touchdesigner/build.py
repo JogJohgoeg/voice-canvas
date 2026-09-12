@@ -11,7 +11,7 @@ try:
  page=c.appendCustomPage('Audio Visual')
  p=page.appendMenu('Source',label='Input / 输入')[0]; p.menuNames=['mic','file']; p.menuLabels=['Microphone / 麦克风','Recording / 录音']; p.val='mic'
  p=page.appendFile('Recording',label='Audio file / 录音文件')[0]; p.val='test_signal.wav'
- p=page.appendFloat('Sensitivity',label='Sensitivity / 灵敏度')[0]; p.val=18; p.min=.1; p.max=30; p.clampMin=True
+ p=page.appendFloat('Sensitivity',label='Sensitivity / 灵敏度')[0]; p.val=22; p.min=.1; p.max=30; p.clampMin=True
  p=page.appendFloat('Intensity',label='Intensity / 画面强度')[0]; p.val=1.3; p.min=.1; p.max=3; p.clampMin=True
  page.appendToggle('Listen',label='Play recording / 播放原音')[0].val=False
  mic=c.create('audiodeviceinCHOP','microphone'); mic.par.active.expr="parent().par.Source == 'mic'"; mic.par.bufferlength=.03
@@ -23,6 +23,11 @@ try:
  for i,name in enumerate(['rms','bass','brightness','onset']): features.par['name'+str(i)]=name; features.par['value'+str(i)]=0
  shader=c.create('textDAT','flow'); shader.text=(BASE/'flow.frag').read_text()
  g=c.create('glslTOP','visual'); g.par.pixeldat=shader; g.par.outputresolution='custom'; g.par.resolutionw=1280; g.par.resolutionh=720
+ cb=c.create('textDAT','memory_callbacks')
+ cb.text="def onCook(scriptOp):\n scriptOp.copyNumpyArray(op('update').module.trace)\n"
+ memory=c.create('scriptTOP','memory'); memory.par.callbacks=cb
+ if c.op('memory_callbacks1'): c.op('memory_callbacks1').destroy()
+ g.inputConnectors[0].connect(memory)
  g.par.vec=2; g.par.vec0name='uAudio'; g.par.vec1name='uScene'
  for i,axis in enumerate('xyzw'): g.par['vec0value'+axis].expr="op('features')[%d][0]"%i
  g.par.vec1valuex.expr='absTime.seconds'; g.par.vec1valuey.expr='parent().par.Intensity'; g.par.vec1valuez=1280/720; g.par.vec1valuew=0

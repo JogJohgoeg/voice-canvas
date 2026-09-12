@@ -9,3 +9,5 @@ TouchDesigner 2025.33230, 1280×720, target 60 fps, this Mac.
 - `verify.py` reproduces the ten-second feature checks inside TouchDesigner. It writes feature statistics, never microphone recordings.
 - No end-to-end audio latency or external audio-interface test yet. 2048-sample FFT plus device buffers add latency.
 - Serialized audio buffers removed from the distributed `.toe`; expanded project and new source scanned for credential names and personal absolute paths, no matches. Gitleaks was not installed.
+
+Continuous sound-history revision: actual microphone 56.84 fps over 10 seconds, no operator errors. History texture shape 1×256×4 with changing features; shader and Script TOP cooked without errors. Envelope now uses current audio slice (12 ms attack / 90 ms release), FFT 1024 samples; these are configured analysis times, not measured end-to-end latency.

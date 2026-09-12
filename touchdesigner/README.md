@@ -15,11 +15,11 @@
 
 ## 网络 / Native network
 
-`microphone` / `recording` → `audio` Switch CHOP → `update` Execute DAT → `features` CHOP → `visual` GLSL TOP → `out1`。
+`microphone` / `recording` → `audio` Switch CHOP → `update` Execute DAT → `features` CHOP / `memory` Script TOP（声音特征历史） → `visual` GLSL TOP → `out1`。
 
-音量控制笔触亮度、厚度和速度；低频控制形体膨胀；频谱重心控制蓝黄变化；瞬态触发涟漪。静音缓慢收敛。输入共享 2048 样本滚动 FFT，含平滑释放，不调用生成式模型。画面是原创程序化环状流动笔触。
+连续丝带记录约 4 秒的声音过程，新声音从右侧进入、历史向左流动。音量和低频改变波面高度、展开程度和弯曲；音色缓慢影响材质。没有闪烁点或爆闪。音量分析使用当前音频块，12 ms 起音平滑、90 ms 释放；频谱使用 1024 样本滚动 FFT。安静时运动减缓。
 
-1280×720、目标 60 fps。FFT 窗口约 46 ms（44.1 kHz）；设备缓冲和显示会额外增加延迟，未宣称端到端低于 30 ms。
+1280×720、目标 60 fps。FFT 窗口约 23 ms（44.1 kHz）；设备缓冲和显示会额外增加延迟，未宣称端到端低于 30 ms。
 
 ## 修改与重建
 
