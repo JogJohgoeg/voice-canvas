@@ -40,3 +40,5 @@
 - Added Monet/Fusion light to Piano and projector, including saved piece presets and fixed mark counts in Zero-AI.
 
 - Added seeded phrase-level random piano arrangements: voice combinations, arpeggios, inversions, registers, rhythmic rests, dynamics and decay; optional fixed arrangement.
+
+- Vary now requests a new piano arrangement on the next beat without restarting the audio clock.
