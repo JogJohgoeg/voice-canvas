@@ -1,3 +1,7 @@
+## 2026-09-12 — Default background switch
+
+- Added one visible background switch and B shortcut to cycle cached worlds. The browser remembers the selected default; switching uses no generation requests and leaves music running.
+
 ## 2026-09-12 — Automatic world tour
 
 - The default camera now completes panoramic turns and moves along a gentle curved path without input. Dynamics adjust travel speed; cadences smoothly redirect the tour. No new worlds or model requests are needed.
