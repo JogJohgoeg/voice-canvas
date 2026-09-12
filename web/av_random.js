@@ -1,15 +1,14 @@
+import {seeded,parameters} from './av_patch.mjs';
 import {particleField} from './particles.mjs';
 import {features,microphoneAudio} from './audio.mjs';
 import {works} from './works.mjs';
 import {hash,initial} from './parser.mjs';
 const $=id=>document.getElementById(id),scene=initial();
-export function seeded(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
-export function parameters(seed){const r=seeded(seed);return {work:Math.floor(r()*works.length),variant:r()*6.28,density:.65+r()*.7,effect:Math.floor(r()*5),strength:.3+r()*.5,base:55*2**Math.floor(r()*4),ratio:[.5,1.5,2,3][Math.floor(r()*4)],wave:['sine','triangle','sawtooth'][Math.floor(r()*3)],filter:['lowpass','bandpass'][Math.floor(r()*2)],cutoff:500+r()*1600,q:1+r()*4,lfo:[.03+r()*.1,.07+r()*.2,.11+r()*.3],delay:.12+r()*.45,reverb:.5+r(),grain:.035+r()*.12,probability:.2+r()*.45,interval:.22+r()*.5,drone:.025+r()*.04,period:8+r()*12};}
 let seed=0,P,rng,field=particleField($('stage')),ctx,graph,epoch=0,nextEvent=0,nextMutation=0,eventIndex=0,events=[],pulse=0,previous={},lastAnalysis=0,lastFrame=0,visualTime=0,paused=false,recording=false,activeVoices=0,stats={};
 const mic=microphoneAudio(message=>$('status').textContent=message,()=>({enabled:!!ctx,rms:previous.rms??0}));
-function evolution(){return {seed,variant:P.variant,effect:P.effect,strength:P.strength,density:P.density,profile:works[P.work],clock:visualTime};}
-function choose(value){seed=/^\d+$/.test(value)?Number(value)>>>0:hash(value);P=parameters(seed);rng=seeded(seed^0xa3c59ac3);location.hash=String(seed);$('seed').value=String(seed);events=[];eventIndex=0;nextEvent=0;nextMutation=P.period;visualTime=0;if(ctx){epoch=ctx.currentTime;graph?.stop();graph=makeGraph();}updateLabel();}
-function updateLabel(){$('patch').textContent=`${works[P.work].name} · seed ${seed} · ${P.wave} / ${P.filter}`;}
+function evolution(){return {seed,symmetry:P.symmetry,variant:P.variant,effect:P.effect,strength:P.strength,density:P.density,profile:works[P.work],clock:visualTime};}
+function choose(value){if(recording){$('status').textContent='Finish recording before changing seed / 录制结束后切换种子';$('seed').value=String(seed);location.hash=String(seed);return;}previous={};pulse=0;seed=/^\d+$/.test(value)?Number(value)>>>0:hash(value);P=parameters(seed);rng=seeded(seed^0xa3c59ac3);location.hash=String(seed);$('seed').value=String(seed);events=[];eventIndex=0;nextEvent=0;nextMutation=P.period;visualTime=0;if(ctx){epoch=ctx.currentTime;graph?.stop();graph=makeGraph();}updateLabel();}
+function updateLabel(){$('patch').textContent=`${works[P.work].name} · seed ${seed} · ${P.symmetry}-fold · ${P.wave} / ${P.filter}`;}
 function vary(){P.variant+= (rng()-.5)*.6;P.strength=Math.max(.2,Math.min(1,P.strength+(rng()-.5)*.16));P.cutoff=Math.max(250,Math.min(3000,P.cutoff+(rng()-.5)*250));P.density=Math.max(.5,Math.min(1.5,P.density+(rng()-.5)*.12));graph?.filter.frequency.setTargetAtTime(P.cutoff,ctx.currentTime,.7);updateLabel();}
 function makeGraph(){
  const nodes=[],bus=ctx.createGain(),filter=ctx.createBiquadFilter(),limiter=ctx.createDynamicsCompressor(),ceiling=ctx.createWaveShaper(),volume=ctx.createGain(),analyser=ctx.createAnalyser(),destination=ctx.createMediaStreamDestination();

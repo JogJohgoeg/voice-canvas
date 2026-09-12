@@ -70,9 +70,12 @@ Replace the example IP with your computer's LAN address. Open `https://192.168.1
 python3 build/build.py
 node build/test_parser.mjs
 node build/test_audio.mjs
+node build/test_seed.mjs
+python3 build/test_backend.py
+python3 build/test_blender.py
 ```
 
-`web/` contains editable modules; `server/` the optional backend; `build/` the tiny module bundler; `docs/` the generated Pages site and original screenshots. Rebuild after changing modules. Pages publishes `main:/docs`. `web/av_random.html` and both Pages entries have all JavaScript/CSS inline. No package manager is needed.
+`web/` contains editable modules; `server/` the optional backend; `build/` the tiny module bundler; `docs/` the generated Pages site and original screenshots. Rebuild after changing modules. Pages publishes `main:/docs`. `web/av_random.html` and both Pages entries have all JavaScript/CSS inline. No package manager is needed. With an isolated Chrome debug session on port 9347, `node build/test_browser.mjs` checks the actual static pages, sound activation, pause and seed restoration. Set `VOICE_CDP` to use a different local debug endpoint.
 
 ## Credits / 致谢
 
