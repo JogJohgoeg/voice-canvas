@@ -2,7 +2,7 @@
 
 **TouchDesigner 原生工程：麦克风或录音驱动实时画面。**
 
-打开 [`touchdesigner/VoiceCanvas.toe`](touchdesigner/VoiceCanvas.toe)，在 `/project1` 的 **Audio Visual** 参数页选择 **Microphone / 麦克风** 或 **Recording / 录音**。F1 进入演出，Esc 返回编辑。首次默认使用原创测试信号；选择自己的录音即可演出。
+打开 [`touchdesigner/VoiceCanvas.toe`](touchdesigner/VoiceCanvas.toe)，在 `/project1` 的 **Audio Visual** 参数页选择 **Microphone / 麦克风** 或 **Recording / 录音**。F1 进入演出，Esc 返回编辑。默认使用麦克风；也可选择自己的录音或附带测试信号。
 
 声音直接决定形体膨胀、笔触厚度、蓝黄色彩和瞬态涟漪。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
 
