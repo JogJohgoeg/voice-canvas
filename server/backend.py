@@ -265,3 +265,17 @@ class SceneBackend:
         if not isinstance(plugin,dict) or not isinstance(plugin.get('shader'),str) or len(plugin['shader'])>12000 or not isinstance(plugin.get('name'),str) or len(plugin['name'])>80 or not isinstance(plugin.get('params'),list) or len(plugin['params'])>8 or plugin.get('init'):
             raise ValueError('Invalid plugin manifest')
         yield {'plugin':plugin,'latency_ms':round((time.monotonic()-start)*1000,2)}
+
+    def performance(self, prompt, previous=None):
+        from director_score import INSTRUCTIONS as directing,validate
+        start=time.monotonic();deadline=start+60;result=''
+        request=json.dumps({'request':prompt,'previous':previous},ensure_ascii=False)
+        try:
+            for delta in self.app_server(request,deadline,directing):
+                result+=delta
+                if len(result)>20000:raise ValueError('Score too large')
+                yield {'status':'composing'}
+        except (RuntimeError,OSError):
+            self.close();result=''.join(self.exec_cli(request,deadline,directing))
+        plan=validate(json.loads(result[result.find('{'):result.rfind('}')+1]))
+        yield {'plan':plan,'latency_ms':round((time.monotonic()-start)*1000)}

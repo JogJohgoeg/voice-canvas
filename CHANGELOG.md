@@ -1,3 +1,10 @@
+## 2026-09-12 — One model, one performance prompt
+
+- Removed all feature menus from the surface; a single prompt starts or changes the performance, and “停止” stops continuation and sound.
+- GPT-6 returns one validated JSON plan containing piano notes and coordinated visual parameters. Shared-clock phrase boundaries apply music and visuals together; asynchronous preparation keeps the previous phrase live.
+- Browser synthesis remains default; explicit natural-language MIDI requests enable an external instrument and mute synthesis. Added bounded score validation and prompt/score/stop browser regression.
+- Real GPT-6 probe: 34 notes, 24 beats, coordinated ink plan in 16.357 seconds. Static hosting explicitly requires the local model backend.
+
 ## 2026-09-12 — Consolidated two-mode performer
 
 - One home page: browser piano (default) or opt-in MIDI instrument output; browser synthesis mutes in instrument mode. Stop and mode changes release MIDI notes and pedal. Incoming MIDI is not echoed back.

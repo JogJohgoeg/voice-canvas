@@ -65,7 +65,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
         if not self.local_request():
             return self.reply({'error': 'Local requests only'},403)
-        if self.path not in ('/api/scene','/api/blender','/api/section','/api/plugin'):
+        if self.path not in ('/api/scene','/api/blender','/api/section','/api/plugin','/api/performance'):
             return self.reply({'error':'Not found'},404)
         try:
             length = int(self.headers.get('Content-Length','0'))
@@ -77,6 +77,9 @@ class Handler(SimpleHTTPRequestHandler):
                 if not isinstance(data,dict) or not isinstance(data.get('scene'),dict):
                     raise ValueError('Invalid scene')
                 return self.reply(BACKEND.blender_scene(data['scene']))
+            if self.path == '/api/performance':
+                if not isinstance(data,dict) or not isinstance(data.get('prompt'),str) or not 0<len(data['prompt'])<=2000:raise ValueError('Invalid performance request')
+                data={**data,'transcript':'','scene':{}}
             if self.path == '/api/plugin':
                 if not isinstance(data,dict) or not isinstance(data.get('prompt'),str) or not 0<len(data['prompt'])<=2000:
                     raise ValueError('Invalid plugin prompt')
@@ -95,7 +98,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Content-Type','application/x-ndjson; charset=utf-8')
         self.end_headers()
         try:
-            stream=BACKEND.visual_plugin(data['prompt'],data.get('style','fusion')) if self.path=='/api/plugin' else BACKEND.section_brief(data['piece'],data.get('style','fusion')) if self.path=='/api/section' else BACKEND.generate(data['transcript'],data['scene'])
+            stream=BACKEND.performance(data['prompt'],data.get('previous')) if self.path=='/api/performance' else BACKEND.visual_plugin(data['prompt'],data.get('style','fusion')) if self.path=='/api/plugin' else BACKEND.section_brief(data['piece'],data.get('style','fusion')) if self.path=='/api/section' else BACKEND.generate(data['transcript'],data['scene'])
             for event in stream:
                 self.wfile.write((json.dumps(event,ensure_ascii=False)+'\n').encode())
                 self.wfile.flush()
