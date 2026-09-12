@@ -34,3 +34,8 @@ with tempfile.TemporaryDirectory() as folder:
 print('Cached Fusion fallback keeps the requested accent and accepts another matching seed')
 assert specification({'style':'fusion','piano':True,'workStyle':{'palette':['#123456','#654321']}})['palette']==['#123456','#657075']
 print('Piano section palette is retained by optional Fusion renders')
+
+monet=specification({'style':'monet'});assert monet['style']=='monet'
+assert key_for(monet)!=key_for(specification({'style':'fusion'}))
+assert key_for(specification({'style':'fusion','monet':True}))!=key_for(specification({'style':'fusion'}))
+print('Monet and Fusion light have distinct cache identities')

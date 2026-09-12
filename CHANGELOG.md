@@ -27,3 +27,9 @@
 - Added MIDI file playback, two public-domain Debussy excerpts and an original demo GIF.
 - Added optional GPT-6 section briefs and setlist preloading, with local fallback.
 - Documented verified performance research, musical heuristics and latency boundaries.
+
+## 2026-09-12 — Monet / 印象派
+
+- Added Monet and Fusion + Monet light, audio-driven water ripples and cloud density.
+- Added optional Cinematic cello/piano synthesis, shared-clock phrase/cadence mapping and combined WebM recording.
+- Added optional native EEVEE cloud/water/light rendering, cached asynchronously.

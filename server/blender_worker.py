@@ -32,15 +32,16 @@ def specification(scene):
             tint=subject.get('tint')
             if isinstance(tint,str) and len(tint)==7 and tint[0]=='#' and all(c in '0123456789abcdefABCDEF' for c in tint[1:]):colours=[tint,tint]
     seed = int(scene.get('variation', {}).get('seed', 317)) % (2**32)
-    mode='fusion' if scene.get('style')=='fusion' else 'moyers'
+    mode='monet' if scene.get('style')=='monet' else 'fusion' if scene.get('style')=='fusion' else 'moyers'
+    if mode=='monet':colours=['#adc8db','#fff0c5']
     if mode=='fusion':colours=[colours[0] if scene.get('piano') else '#e5b433' if seed%2 else '#2859cd','#657075']
     mood = scene.get('audioMood', {})
-    return {'style':mode,'family':max(0,min(7,family)), 'palette':colours, 'seed':seed,
+    return {'style':mode,'monet':bool(scene.get('monet',False)),'family':max(0,min(7,family)), 'palette':colours, 'seed':seed,
             'mood':{k:max(0,min(1,float(mood.get(k,0)))) for k in ('level','warmth')}}
 
 
 def key_for(spec):
-    return hashlib.sha256(json.dumps(([spec['style']] if spec.get('style')=='fusion' else [])+[spec['family'],spec['palette'],spec['seed']],sort_keys=True).encode()).hexdigest()[:24]
+    return hashlib.sha256(json.dumps(([spec['style']]+(['monet-light'] if spec.get('monet') else []) if spec.get('style') in ('fusion','monet') else [])+[spec['family'],spec['palette'],spec['seed']],sort_keys=True).encode()).hexdigest()[:24]
 
 
 class BlenderWorker:
@@ -72,14 +73,14 @@ class BlenderWorker:
         # Any already-warmed matching family can play while this exact seed renders.
         for manifest in CACHE.glob('*/manifest.json'):
             data=json.loads(manifest.read_text())
-            if data['spec']['family']==spec['family'] and data['spec'].get('style','moyers')==spec['style'] and (spec['style']!='fusion' or data['spec']['palette']==spec['palette']):
+            if bool(data['spec'].get('monet'))==bool(spec.get('monet')) and data['spec']['family']==spec['family'] and data['spec'].get('style','moyers')==spec['style'] and (spec['style']!='fusion' or data['spec']['palette']==spec['palette']):
                 return {**data,'approximate':True,'requested_key':key}
         return {'status':'queued','key':key}
     def prewarm(self):
         # Prioritize all default-style families, plus both accents for sea/organism.
         for family in (1,4,0,2,3):self.request({'style':'fusion','workStyle':{'family':family}})
         for family in (1,4):self.request({'style':'fusion','workStyle':{'family':family},'variation':{'seed':318}})
-        self.request({'workStyle':{'family':1,'palette':['#168eff','#70ffe6']}})
+        self.request({'style':'monet','workStyle':{'family':1}})
     def run(self):
         while True:
             key,spec=self.jobs.get();start=time.monotonic();folder=CACHE/key;folder.mkdir(exist_ok=True)
@@ -153,13 +154,27 @@ def render(folder):
             material.node_tree.links.new(noise.outputs['Fac'],ramp.inputs[0]);material.node_tree.links.new(ramp.outputs['Color'],emit.inputs[0])
     for poly,index in zip(mesh.polygons,indices):poly.material_index=int(index)
     bpy.ops.object.camera_add(location=(0,-6,0));camera=bpy.context.object;camera.rotation_euler=(Vector((0,0,0))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.type='ORTHO';camera.data.ortho_scale=5.2;scene.camera=camera
+    light_objects=[]
+    if spec.get('style')=='monet' or spec.get('monet'):
+        # Native EEVEE clouds: procedural density in volumes, directional lights and water.
+        if spec.get('style')=='monet':obj.hide_render=True
+        camera.location=(0,-6,1.3);camera.rotation_euler=(Vector((0,0,.15))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.clip_end=20;scene.eevee.volumetric_start=.1;scene.eevee.volumetric_end=12;scene.eevee.volumetric_samples=16
+        background=scene.world.node_tree.nodes.get('Background');background.inputs['Color'].default_value=(.42,.58,.72,1);background.inputs['Strength'].default_value=.65
+        for i in range(4):
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=8,radius=.65,location=(-1.8+i*1.1,.5,.5+rng.random()*.6));cloud=bpy.context.object;cloud.scale=(1.1,.45,.22+rng.random()*.2);light_objects.append((cloud,cloud.location.x))
+            mat=bpy.data.materials.new('Pastel cloud');mat.use_nodes=True;nt=mat.node_tree;nt.nodes.clear();output=nt.nodes.new('ShaderNodeOutputMaterial');vol=nt.nodes.new('ShaderNodeVolumePrincipled');vol.inputs['Color'].default_value=(.82,.87,.98,1);vol.inputs['Anisotropy'].default_value=.4;vol.inputs['Emission Color'].default_value=(.9,.86,.74,1);vol.inputs['Emission Strength'].default_value=.12
+            noise=nt.nodes.new('ShaderNodeTexNoise');noise.inputs['Scale'].default_value=3;noise.inputs['Detail'].default_value=2;ramp=nt.nodes.new('ShaderNodeValToRGB');ramp.color_ramp.elements[0].position=.4;ramp.color_ramp.elements[1].position=.72;ramp.color_ramp.elements[1].color=(1.8,1.8,1.8,1);nt.links.new(noise.outputs['Fac'],ramp.inputs[0]);nt.links.new(ramp.outputs[0],vol.inputs['Density']);nt.links.new(vol.outputs['Volume'],output.inputs['Volume']);cloud.data.materials.append(mat)
+        bpy.ops.mesh.primitive_plane_add(size=200,location=(0,0,-.65));water=bpy.context.object;mat=bpy.data.materials.new('Impressionist water');mat.diffuse_color=(.4,.58,.7,1);mat.use_nodes=True;bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(.42,.6,.75,1);bs.inputs['Metallic'].default_value=.55;bs.inputs['Roughness'].default_value=.24;noise=mat.node_tree.nodes.new('ShaderNodeTexNoise');noise.inputs['Scale'].default_value=22;bump=mat.node_tree.nodes.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.2;mat.node_tree.links.new(noise.outputs['Fac'],bump.inputs['Height']);mat.node_tree.links.new(bump.outputs[0],bs.inputs['Normal']);water.data.materials.append(mat)
+        for x in (-.6,.15,.9):
+            bpy.ops.object.light_add(type='SPOT',location=(x,-.3,2.6));lamp=bpy.context.object;lamp.rotation_euler=(Vector((x-.6,0,-1))-lamp.location).to_track_quat('-Z','Y').to_euler();lamp.data.energy=400;lamp.data.color=(1,.86,.6);lamp.data.spot_size=.4;lamp.data.spot_blend=.75
     # Gentle native volume with an area light; no world/ground plane.
     bpy.ops.mesh.primitive_cube_add(size=3);fog=bpy.context.object
-    material=bpy.data.materials.new('Fog');material.use_nodes=True;nodes=material.node_tree.nodes;nodes.clear();output=nodes.new('ShaderNodeOutputMaterial');volume=nodes.new('ShaderNodeVolumePrincipled');volume.inputs['Density'].default_value=.045 if fusion else .025;volume.inputs['Color'].default_value=(.12,.14,.16,1) if fusion else (.5,.5,.5,1);material.node_tree.links.new(volume.outputs['Volume'],output.inputs['Volume']);fog.data.materials.append(material)
-    bpy.ops.object.light_add(type='AREA',location=(0,-2,2));bpy.context.object.data.energy=35
-    scene.compositing_node_group=bpy.data.node_groups.new('Bloom','CompositorNodeTree');tree=scene.compositing_node_group;nodes=tree.nodes;nodes.clear();layers=nodes.new('CompositorNodeRLayers');glare=nodes.new('CompositorNodeGlare');glare.inputs['Type'].default_value='Fog Glow';glare.inputs['Quality'].default_value='Low';glare.inputs['Threshold'].default_value=.03;glare.inputs['Strength'].default_value=1.4;tree.interface.new_socket(name='Image',in_out='OUTPUT',socket_type='NodeSocketColor');out=nodes.new('NodeGroupOutput');tree.links.new(layers.outputs['Image'],glare.inputs['Image']);tree.links.new(glare.outputs['Image'],out.inputs['Image'])
+    material=bpy.data.materials.new('Fog');material.use_nodes=True;nodes=material.node_tree.nodes;nodes.clear();output=nodes.new('ShaderNodeOutputMaterial');volume=nodes.new('ShaderNodeVolumePrincipled');volume.inputs['Density'].default_value=.004 if light_objects else .045 if fusion else .025;volume.inputs['Color'].default_value=(.8,.85,.95,1) if light_objects else (.12,.14,.16,1) if fusion else (.5,.5,.5,1);material.node_tree.links.new(volume.outputs['Volume'],output.inputs['Volume']);fog.data.materials.append(material)
+    bpy.ops.object.light_add(type='AREA',location=(0,-2,2));bpy.context.object.data.energy=120 if light_objects else 35
+    scene.compositing_node_group=bpy.data.node_groups.new('Bloom','CompositorNodeTree');tree=scene.compositing_node_group;nodes=tree.nodes;nodes.clear();layers=nodes.new('CompositorNodeRLayers');glare=nodes.new('CompositorNodeGlare');glare.inputs['Type'].default_value='Fog Glow';glare.inputs['Quality'].default_value='Low';glare.inputs['Threshold'].default_value=1.2 if light_objects else .03;glare.inputs['Strength'].default_value=.18 if light_objects else 1.4;tree.interface.new_socket(name='Image',in_out='OUTPUT',socket_type='NodeSocketColor');out=nodes.new('NodeGroupOutput');tree.links.new(layers.outputs['Image'],glare.inputs['Image']);tree.links.new(glare.outputs['Image'],out.inputs['Image'])
     for frame in range(48):
         phase=math.tau*frame/48;breath=1+(.07+spec['mood']['level']*.08)*math.sin(phase);obj.scale=(breath,1,1+.04*math.cos(phase));obj.scale.y=1+.03*math.sin(phase)
+        for cloud,origin in light_objects:cloud.location.x=origin+.12*math.sin(phase)
         scene.render.filepath=str(folder/f'frame_{frame:04d}.png');bpy.ops.render.render(write_still=True)
 
 

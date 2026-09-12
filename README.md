@@ -100,3 +100,9 @@ Uncheck Zero-AI to enable optional tiers, enter one piece/section per setlist li
 Measured in Chrome with injected MIDI events: **7.9–22.1 ms event-to-render**, approximately 60 fps. This excludes physical device/display latency; hardware piano tests remain to be done. Zero-AI reproduces a fixed-step feature/parameter trajectory from the same MIDI, seed, mapping settings and section sequence; GPU/viewport differences and live audio may change pixels. Audio analysis has an 8192-sample window and does not share the MIDI latency claim. Standard MIDI type 2 and SMPTE timing are explicitly rejected.
 
 ![Piano mode, original renderer recording](docs/screenshots/piano-demo.gif)
+
+### Monet and cinematic sound / 印象派与电影氛围
+
+Choose **Monet / 印象派** for original procedural pastel clouds, reflected light and onset-driven ripples, or enable **Fusion + Monet** to combine ink forms with impressionist light. Choose **Cinematic / 电影氛围**, then explicitly turn sound on: seeded 50–70 BPM modal/minor cello-like synthesis and piano-like partials share the visual clock. Random AV records the composed picture and score together as a 15-second WebM. Sound remains off until clicked.
+
+选择 Monet 呈现淡彩云层、水光与起音涟漪；Fusion + Monet 将水墨结构与印象派光线融合。电影氛围使用代码合成弓弦和钢琴音色，默认关闭，点击开启；随机声画页支持同步录制。可选 Blender 后台生成原生体积云与光束，忙碌时实时画布继续。
