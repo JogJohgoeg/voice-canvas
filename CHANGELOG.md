@@ -1,3 +1,9 @@
+## 2026-09-12 — Cached World layer
+
+- Added environment-only offline Marble generation, resumable operations, local SPZ/collider-GLB/thumbnail cache and persistent 12-draft / 4-full limit with measured credit deltas.
+- Added lazy Three.js/Spark playback; music drives camera/exposure/haze plus existing particles. Missing caches retain Fusion. Explicit requested World/Narrative presets survive model style drift.
+- Public cache export excludes account/operation records; projector and recording share the composite. No StreamDiffusion installation or UI was added.
+
 ## 2026-09-12 — Narrative piano visuals
 
 - Added a sparse pale-stage renderer with twelve original cuboids per figure, fine text connectors, seeded crowd motion, pedal afterimages and silence settling; Glass defaults to Narrative.

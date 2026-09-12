@@ -38,6 +38,8 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
     def translate_path(self, path):
+        if re.fullmatch(r'/worlds/(?:[a-z0-9_-]+/)*[a-zA-Z0-9_.-]+\.(?:json|spz|glb|jpg)',path) and '..' not in path:
+            return str(ROOT.parent/path.lstrip('/'))
         if re.fullmatch(r'/blender_cache/[0-9a-f]{24}/loop\.webm', path):
             return str(ROOT.parent / path.lstrip('/'))
         return super().translate_path(path)
@@ -55,6 +57,8 @@ class Handler(SimpleHTTPRequestHandler):
         elif self.path=='/repertoire/index.json' and (ROOT/'repertoire/local/index.json').is_file():
             self.path='/repertoire/local/index.json';super().do_GET()
         elif re.fullmatch(r'/repertoire/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_.-]+\.(?:json|mid|midi)',self.path) and '..' not in self.path and (ROOT/self.path.lstrip('/')).resolve().is_relative_to((ROOT/'repertoire').resolve()):
+            super().do_GET()
+        elif re.fullmatch(r'/worlds/(?:[a-z0-9_-]+/)*[a-zA-Z0-9_.-]+\.(?:json|spz|glb|jpg)',self.path) and '..' not in self.path:
             super().do_GET()
         elif re.fullmatch(r'/blender_cache/[0-9a-f]{24}/loop\.webm',self.path):
             super().do_GET()

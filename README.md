@@ -25,3 +25,7 @@ Describe **“Glass Mishima，叙事风格”** for sparse procedural figures an
 For deterministic instrument-driven visuals without a model, enter **“Glass Mishima 零AI叙事”** (MIDI input), or **“Glass Mishima 零AI叙事 麦克风”** (acoustic input). This visual mode does not synthesize or distribute Glass’s score; play your instrument. **“开启摄像头” / “关闭摄像头”** controls the optional performer view; **“投影”** opens visuals only. Camera stays local and is not sent to GLM.
 
 Add **“诗：”** followed by your text; Shift+Enter inserts line breaks. The implementation also stores poem/program text in the existing piece preset. The seven Mishima section labels advance on musical phrases/cadences or MIDI markers. See [research credits](docs/RESEARCH.md).
+
+## World / 世界
+
+**“Glass Mishima Opening World”** plays in a pre-generated, navigable Marble environment. Music moves the camera and changes exposure, haze and particles; the world stays fixed. Draft and full-quality preparation run offline with an environment-only credential and a persistent 12-draft / 4-full budget. Cached playback needs no World Labs key. Missing worlds fall back to Fusion. [Preparation, credits and rendering details](docs/WORLDS.md).

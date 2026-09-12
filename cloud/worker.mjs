@@ -1,7 +1,7 @@
 import {instructions} from './instructions.mjs';
 export function validate(p){
  const num=(v,a,b)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<a||v>b)throw Error('Invalid score number');return v;};
- if(!p||typeof p.description!=='string'||!['fusion','moyers','vangogh','ink','monet','narrative'].includes(p.style)||!Number.isInteger(p.family)||p.family<0||p.family>4)throw Error('Invalid visual plan');
+ if(!p||typeof p.description!=='string'||!['fusion','moyers','vangogh','ink','monet','narrative','world'].includes(p.style)||!Number.isInteger(p.family)||p.family<0||p.family>4)throw Error('Invalid visual plan');
  const tempo=num(p.tempo,40,120),beats=num(p.beats,16,32);
  if(!Array.isArray(p.palette)||p.palette.length!==2||!p.palette.every(c=>/^#[a-f\d]{6}$/i.test(c)))throw Error('Invalid palette');
  if(!Array.isArray(p.notes)||p.notes.length<1||p.notes.length>128)throw Error('Invalid notes');
@@ -13,7 +13,7 @@ export default {async fetch(request,env){
  const url=new URL(request.url),origin=request.headers.get('Origin');const allowed=!origin||origin===url.origin||['https://jojtown.github.io','https://jogjohgoeg.github.io'].includes(origin);
  const headers={'Content-Type':'application/x-ndjson; charset=utf-8','Cache-Control':'no-store','Vary':'Origin'};if(origin&&allowed)headers['Access-Control-Allow-Origin']=origin;
  const reply=(value,status=200)=>new Response(JSON.stringify(value)+'\n',{status,headers});
- if(!url.pathname.startsWith('/api/'))return env.ASSETS.fetch(request);
+ if(!url.pathname.startsWith('/api/')){const response=await env.ASSETS.fetch(request);if(url.pathname.startsWith('/worlds/')&&origin&&allowed){const copy=new Response(response.body,response);copy.headers.set('Access-Control-Allow-Origin',origin);copy.headers.set('Vary','Origin');return copy;}return response;}
  if(!allowed)return reply({error:'Origin denied'},403);
  if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type'}});
  if(url.pathname==='/api/status')return reply({backend:'GLM',model:env.MODEL,available:!!env.PROVIDER_SECRET});

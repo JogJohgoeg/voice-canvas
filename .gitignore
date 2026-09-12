@@ -15,3 +15,9 @@ docs/repertoire/local/
 
 .wrangler/
 .dev.vars
+
+worlds/
+world_worker.log
+
+/web/worlds
+/docs/worlds
