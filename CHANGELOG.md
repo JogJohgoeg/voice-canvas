@@ -35,3 +35,6 @@
 - Added optional native EEVEE cloud/water/light rendering, cached asynchronously.
 
 - Fixed local serving of new modules; dependency-route regression check added. Cinematic level and tempo display refined; Monet PNG/WebM also works without WebGL.
+
+- Expanded cinematic piano into bass, arpeggio and treble parts with selectable density and bounded 24-note synthesis.
+- Added Monet/Fusion light to Piano and projector, including saved piece presets and fixed mark counts in Zero-AI.

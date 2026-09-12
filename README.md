@@ -106,3 +106,5 @@ Measured in Chrome with injected MIDI events: **7.9–22.1 ms event-to-render**,
 Choose **Monet / 印象派** for original procedural pastel clouds, reflected light and onset-driven ripples, or enable **Fusion + Monet** to combine ink forms with impressionist light. Choose **Cinematic / 电影氛围**, then explicitly turn sound on: seeded 50–70 BPM modal/minor cello-like synthesis and piano-like partials share the visual clock. Random AV records the composed picture and score together as a 15-second WebM. Sound remains off until clicked.
 
 选择 Monet 呈现淡彩云层、水光与起音涟漪；Fusion + Monet 将水墨结构与印象派光线融合。电影氛围使用代码合成弓弦和钢琴音色，默认关闭，点击开启；随机声画页支持同步录制。可选 Blender 后台生成原生体积云与光束，忙碌时实时画布继续。
+
+Cinematic piano now defaults to three interlocking parts: bass support, middle-register arpeggios and treble responses. The piano-parts selector offers rich, two-part or sparse arrangements while preserving the shared audiovisual clock. 钢琴默认三声部，可选双声部或疏朗。Monet/Fusion + Monet also works in Piano mode and the projector, and is saved with piece presets.

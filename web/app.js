@@ -22,7 +22,7 @@ const evolution={enabled:true,selectedWork:-1,workIndex:-1,remaining:[],profile:
   this.trigger=audio?'voice':'timer';this.next=t+6000+values[1]%6000;
  }
 };evolution.randomize();workSelect.onchange=()=>{evolution.selectedWork=Number(workSelect.value);evolution.randomize();};
-const metrics={parser_ms:0,tier1_paint_ms:0,model_paint_ms:null};const view=renderer($('canvas'),()=>preview??state,()=>({style,monet:$('monetBlend').checked,hasModel:hasModel||blender.visible,evolution,sound,volume:Number($('volume').value)}),micAudio);
+const metrics={parser_ms:0,tier1_paint_ms:0,model_paint_ms:null};const view=renderer($('canvas'),()=>preview??state,()=>({style,pianoParts:Number($('pianoParts').value),monet:$('monetBlend').checked,hasModel:hasModel||blender.visible,evolution,sound,volume:Number($('volume').value)}),micAudio);
 setInterval(()=>{$('workSource').hidden=!['moyers','fusion'].includes(style);$('workSource').href=evolution.profile.source??'https://timmoyers.com/audiovisual--live-performance.html';$('currentWork').textContent=['moyers','fusion'].includes(style)?(style==='fusion'?'Fusion / 融合 · ':'')+evolution.profile.name+' · '+(evolution.trigger==='voice'?'声音触发 / Voice':'自动变奏 / Auto'):style==='vangogh'?'Van Gogh':style==='monet'?'Monet / 印象派':'Ink';$('audioMic').textContent=micAudio.state.active||micAudio.state.pending?'停止输入 / Stop input':'仅声音 / Audio';Object.assign(metrics,view.timing);$('metrics').textContent=JSON.stringify(metrics,null,2);$('audio').textContent=JSON.stringify({source:view.audio.source,RMS:+(view.audio.rms??0).toFixed(3),centroid_Hz:Math.round(view.audio.centroid??0),pitch_Hz:Math.round(view.audio.pitch??0),onset_pulse:+(view.audio.pulse??0).toFixed(2)},null,2)},150);
 function panel(){$('scene').textContent=JSON.stringify(preview??state,null,2);$('metrics').textContent=JSON.stringify(metrics,null,2);}
 function save(){const a=document.createElement('a');a.download='voice-canvas.png';a.href=view.capture();a.click();}
@@ -64,6 +64,6 @@ function performanceMode(){const enabled=document.body.classList.toggle('perform
 $('perform').onclick=performanceMode;document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p'&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))performanceMode();});
 window.voice={evolution,get visualAudio(){return view.audio},get soundEnabled(){return sound.enabled},audio:micAudio.state,get timing(){return view.timing},submit,get state(){return state},get frames(){return view.frames}};
 
-$('soundMode').onchange=()=>sound.setMode($('soundMode').value);
+$('soundMode').onchange=()=>{sound.setMode($('soundMode').value);$('pianoParts').hidden=$('soundMode').value!=='cinematic';};
 
 $('monetBlend').onchange=()=>{revision++;hideModel();requestModel(revision);};
