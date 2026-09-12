@@ -33,6 +33,9 @@ try:
  e=c.create('executeDAT','update'); e.text=(BASE/'audio_features.py').read_text(); e.par.framestart=True
  c.par.top='out1'; c.par.w=1280; c.par.h=720
  for i,n in enumerate(c.children): n.nodeX=(i%5)*220; n.nodeY=-(i//5)*160
+ w=op('/perform')
+ w.par.winop=output; w.par.size='fill'; w.par.borders=False
+ w.par.includedialog=False; w.par.alwaysontop=True
  project.cookRate=60
  target=BASE/'VoiceCanvas.toe'
  if target.exists(): target.replace(BASE/'VoiceCanvas.previous.toe')
