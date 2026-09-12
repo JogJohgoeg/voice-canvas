@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>凌晨，五拍</title>
+<style>*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#09080e;color:#f3d5b3;font-family:Georgia,'Songti SC',serif}canvas{display:block;width:100vw;height:100dvh}header{position:fixed;top:6vh;left:7vw;pointer-events:none}h1{font-weight:400;font-size:clamp(28px,5vw,58px);letter-spacing:.12em;margin:0}small{display:block;margin-top:12px;letter-spacing:.15em;opacity:.5}#words{position:fixed;bottom:21vh;left:7vw;font-size:clamp(15px,2vw,23px);letter-spacing:.18em;pointer-events:none}button{position:fixed;bottom:8vh;left:7vw;border:1px solid #f3d5b355;border-radius:4px;padding:12px 23px;color:inherit;background:#09080ecc;font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #f4b76a;outline-offset:5px}#count{position:fixed;right:7vw;bottom:9vh;font:14px monospace;letter-spacing:.6em;opacity:.6}</style>
+<canvas aria-label="钢琴声驱动的移动灯窗与夜城折线"></canvas><header><h1>凌晨，五拍</h1><small>原创 5/4 夜行曲 · 约 41 秒</small></header><div id="words">城市睡了。脚步还没有。</div><button>出发</button><div id="count">● · · · ·</div>
+<script>
+// Explicit original notes; 10 bars of 5/4, grouped 3 + 2. No arranger, imports or assets.
+// [beat, MIDI pitch, duration, velocity]. The melody gradually outruns its ostinato.
+const melody=[
+ [0,76,.5,53],[1,78,.5,49],[2,79,.75,58],[3.5,83,.5,55],[4.5,78,.35,41],
+ [5,76,.5,51],[6,74,.5,45],[7,71,.75,49],[8.5,74,.5,53],[9.5,78,.35,47],
+ [10,79,.5,59],[11,83,.5,61],[12,86,.75,68],[13.5,83,.5,60],[14.5,81,.35,54],
+ [15,79,.5,56],[16,78,.5,51],[17,76,.75,55],[18.5,74,.5,45],[19.5,71,.35,39],
+ [20,76,.4,64],[20.5,78,.4,57],[21,79,.4,65],[21.5,83,.4,70],[22,81,.7,62],[23,78,.4,56],[23.5,79,.4,61],[24,83,.75,70],
+ [25,86,.4,73],[25.5,83,.4,65],[26,81,.4,62],[26.5,79,.4,59],[27,78,.7,58],[28,76,.4,60],[28.5,78,.4,64],[29,83,.75,72],
+ [30,88,.75,82],[31,86,.4,73],[31.5,83,.4,70],[32,81,.75,64],[33.5,79,.5,56],[34.5,78,.35,50],
+ [35,76,.75,55],[36,74,.5,48],[37,71,1,43],[38.5,74,.75,47],
+ [40,76,1,45],[41.5,78,.5,43],[43,79,1.25,47],
+ [45,78,.75,38],[46.5,75,.5,33],[48,76,2,37]
+];
+const lower=[
+ [0,40,1.8,48],[1.5,59,.6,29],[2.25,64,.5,30],[3,47,1.7,41],[4,67,.6,28],
+ [5,36,1.8,46],[6.5,55,.6,29],[7.25,62,.5,30],[8,43,1.7,40],[9,64,.6,28],
+ [10,45,1.8,49],[11.5,60,.6,32],[12.25,64,.5,33],[13,52,1.7,44],[14,67,.6,31],
+ [15,47,1.8,45],[16.5,59,.6,29],[17.25,63,.5,29],[18,54,1.7,40],[19,66,.6,26],
+ [20,40,1.8,54],[21.5,59,.6,37],[22.25,64,.5,39],[23,47,1.7,47],[24,67,.6,34],
+ [25,36,1.8,56],[26.5,55,.6,39],[27.25,62,.5,40],[28,43,1.7,49],[29,64,.6,36],
+ [30,45,1.8,58],[31.5,60,.6,39],[32.25,64,.5,40],[33,52,1.7,49],[34,67,.6,34],
+ [35,47,1.8,46],[36.5,59,.6,30],[37.25,63,.5,29],[38,54,1.7,39],[39,66,.6,25],
+ [40,45,2.5,36],[41.5,60,1.5,25],[43,52,1.5,30],
+ [45,47,1.5,31],[46.5,63,1,23],[48,40,2,33],[48,59,2,20],[48,64,2,19]
+];
+const canvas=document.querySelector('canvas'),c=canvas.getContext('2d'),button=document.querySelector('button'),words=document.querySelector('#words'),count=document.querySelector('#count');
+const spb=.75,total=41;let ctx=null,epoch=0,playing=false,held=0,analyser;
+function strike(n,bus){const [beat,pitch,duration,velocity]=n,at=epoch+beat*spb,f=440*2**((pitch-69)/12),tail=duration*spb+.3;
+ for(let h=1;h<=5;h++){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f*h*(1+.00009*h*h);g.gain.setValueAtTime(.00001,at);g.gain.exponentialRampToValueAtTime(velocity/127*.13/h**1.7,at+.006);g.gain.exponentialRampToValueAtTime(.00001,at+tail);o.connect(g);g.connect(bus);o.start(at);o.stop(at+tail+.02);o.onended=()=>{o.disconnect();g.disconnect();};}}
+async function stop(){held=playing?Math.max(0,ctx.currentTime-epoch):held;playing=false;const old=ctx;ctx=null;if(old)await old.close();button.textContent='再走一遍';}
+button.onclick=async()=>{if(playing){await stop();return;}button.disabled=true;try{ctx=new AudioContext();await ctx.resume();const dry=ctx.createGain(),limit=ctx.createDynamicsCompressor();dry.gain.value=.8;limit.threshold.value=-18;limit.ratio.value=5;analyser=ctx.createAnalyser();dry.connect(limit);limit.connect(analyser);analyser.connect(ctx.destination);const echo=ctx.createDelay(1),returnGain=ctx.createGain(),damp=ctx.createBiquadFilter();echo.delayTime.value=.28125;returnGain.gain.value=.18;damp.frequency.value=1500;dry.connect(echo);echo.connect(damp);damp.connect(returnGain);returnGain.connect(echo);damp.connect(limit);epoch=ctx.currentTime+.12;held=0;for(const n of [...lower,...melody])strike(n,dry);playing=true;button.textContent='停下脚步';}catch{if(ctx)await stop();button.textContent='重试开启声音';}finally{button.disabled=false;}};
+function frame(){const dpr=Math.min(2,devicePixelRatio||1),w=Math.round(innerWidth*dpr),h=Math.round(innerHeight*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}const t=playing?Math.max(0,ctx.currentTime-epoch):held,b=t/spb,arrival=Math.min(1,Math.max(0,(b-38)/12)),fade=Math.min(1,Math.max(0,(total-t)/3));
+ const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,`rgb(${9+arrival*14},${8+arrival*13},${14+arrival*16})`);g.addColorStop(1,'#100d15');c.fillStyle=g;c.fillRect(0,0,w,h);
+ const vx=w*(.58+Math.sin(t*.08)*.07),vy=h*(.43-arrival*.06);c.lineWidth=dpr;c.strokeStyle=`rgba(156,122,109,${.12*fade})`;
+ for(let i=-8;i<=8;i++){c.beginPath();c.moveTo(vx,vy);c.lineTo(w*.5+i*w*.18,h);c.stroke();}
+ for(let i=0;i<16;i++){const z=(i/16+t*.022)%1,y=vy+(h-vy)*z*z;c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();}
+ // Each window is drawn from a note; its passage is tied to the same audio clock.
+ for(const [beat,midi,duration,velocity] of melody){const age=b-beat;if(age<0||age>10)continue;const life=(1-age/10)*fade,side=beat%2===0?-1:1,depth=Math.min(1,.22+age*.075),x=vx+side*w*(.12+depth*.45),y=vy-(midi-70)*h*.012+depth*h*.12,ww=(8+depth*30)*dpr,hh=(14+(midi-70)*1.6)*dpr;const glow=c.createRadialGradient(x,y,0,x,y,ww*2);glow.addColorStop(0,`rgba(239,160,83,${life*.17})`);glow.addColorStop(1,'rgba(239,160,83,0)');c.fillStyle=glow;c.fillRect(x-ww*2,y-ww*2,ww*4,ww*4);c.fillStyle=`rgba(246,${Math.round(158+arrival*55)},110,${life*velocity/100})`;c.fillRect(x-ww*.5,y-hh*.5,ww,hh);c.strokeStyle=`rgba(198,148,112,${life*.22})`;c.beginPath();c.moveTo(x,vy+h*.2);c.lineTo(x,y-hh*.8);c.lineTo(x+side*ww*1.4,y-hh*.8);c.stroke();}
+ // An asymmetric five-beat signal: three steps, then two.
+ const tick=Math.floor(b)%5;count.textContent=Array.from({length:5},(_,i)=>i===tick?'●':'·').join(' ');const pulse=Math.exp(-(b%1)*7);for(let i=0;i<5;i++){const x=w*(.38+i*.052);c.fillStyle=`rgba(233,185,131,${fade*(i===tick?.16+pulse*.55:.045)})`;c.fillRect(x,h*.83,(i===2?18:8)*dpr,2*dpr);}
+ if(arrival>0){c.strokeStyle=`rgba(244,211,169,${arrival*.3*fade})`;c.lineWidth=2*dpr;c.beginPath();c.moveTo(w*.2,vy);c.lineTo(w*.88,vy);c.stroke();}
+ const text=b<20?'城市睡了。脚步还没有。':b<38?'我把第五拍，留给没有赶上的人。':'天快亮了。不必再追。';if(words.textContent!==text)words.textContent=text;words.style.opacity=String(fade*.75);count.style.opacity=String(fade*.6);if(playing&&t>=total)void stop();requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+</script></html>
