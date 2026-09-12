@@ -4,7 +4,7 @@
 
 打开 [`touchdesigner/VoiceCanvas.toe`](touchdesigner/VoiceCanvas.toe)，在 `/project1` 的 **Audio Visual** 参数页选择 **Microphone / 麦克风** 或 **Recording / 录音**。F1 进入演出，Esc 返回编辑。默认使用麦克风；也可选择自己的录音或附带测试信号。
 
-当前是原创液态金属，麦克风推动银色镜面的隆起、扭转和连续流动。Esc 退出全屏，F1 返回演出。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
+当前是原创水墨山水，麦克风推动远近山势、湿边晕染和水面运动。Esc 退出全屏，F1 返回演出。无需浏览器、服务或模型。麦克风监听始终关闭；录音原音可选播放。
 
 ![Native GPU audio visual](touchdesigner/preview.png)
 
