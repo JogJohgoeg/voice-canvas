@@ -33,3 +33,10 @@ exec(compile(open(VOICE_TD_DIR + '/build.py').read(), VOICE_TD_DIR + '/build.py'
 这会重建 `/project1`，请先另存自己的修改。源码仅依赖 TD 内置的 NumPy。
 
 Open `VoiceCanvas.toe`, choose **Microphone** or **Recording** in `/project1` → **Audio Visual**, then F1 for performance. Recording monitoring is optional; microphone monitoring is always disabled. No server or AI service is used. The legacy browser show remains available separately.
+
+## Motion references
+
+- [Memo Akten — Simple Harmonic Motion](https://memo.tv/projects/2019/shm/): sound and image share structured, evolving movement.
+- [TouchDesigner fluid component, citing Bruno Imbrizi](https://derivative.ca/community-post/asset/fluid-simulation-component/65741): source force, vorticity and persistence are useful references for continuous deformation.
+
+Our implementation uses an original analytic folded-surface shader, not the referenced fluid solver or copied assets. Live sound immediately deforms the whole surface; the recent feature history preserves the phrase. Geometry moves strongly while material brightness remains comparatively stable.
