@@ -1,0 +1,8 @@
+blender_cache/
+serve.log
+__pycache__/
+*.pyc
+*.webm
+!web/samples/*.webm
+*.pem
+.DS_Store
