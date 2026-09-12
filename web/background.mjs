@@ -1,3 +1,14 @@
-// Reuse the original 16-beat GLM phrase generated in this session; no startup model call.
-// The visual preset is selected independently here for playback in the cached world.
-export const backgroundPlan={description:'已生成的钢琴背景 / Saved piano background',tempo:60,beats:16,style:'world',family:4,palette:['#2c3e50','#ecf0f1'],intensity:.4,seed:317,notes:[[0,45,2,60],[0,60,2,40],[2,48,2,55],[2,64,1,35],[4,45,2,58],[4,60,2,40],[6,42,2,50],[6,55,2,38],[8,45,2,60],[8,60,2,40],[10,48,2,65],[10,64,1,35],[12,45,2,58],[12,60,2,40],[14,42,2,52],[14,55,2,38]]};
+import {cinematicParameters,cinematicArrangement,cinematicPianoNotes} from './cinematic.mjs';
+import {seeded} from './av_patch.mjs';
+// Use the existing piano arranger to develop a new phrase on each shared-clock boundary.
+export function backgroundVariation(seed,phrase=0){
+ const params=cinematicParameters(seed),random=seeded(seed^Math.imul(phrase+1,7919)),notes=[];
+ for(let bar=0;bar<4;bar++){
+  const arrangement=cinematicArrangement(seed,phrase*4+bar,3,true),degree=params.progression[(bar+Math.floor(phrase/4))%params.progression.length];
+  for(let tick=0;tick<8;tick++)for(const note of cinematicPianoNotes(params,degree,tick,3,(seed+phrase)>>>0,arrangement)){
+   const beat=bar*4+tick*.5,duration=note.part==='bass'?1.5:random()<.4?.75:.5;
+   notes.push([beat,note.midi,Math.min(duration,16-beat),Math.round(40+note.strength*40+random()*8)]);
+  }
+ }
+ return {tempo:60,beats:16,style:'world',family:4,palette:['#2c3e50','#ecf0f1'],intensity:.4,seed:317,description:'钢琴自动变奏 '+(phrase+1),musicSeed:seed,variation:phrase,notes};
+}

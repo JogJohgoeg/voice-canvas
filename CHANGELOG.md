@@ -1,3 +1,8 @@
+## 2026-09-12 — Random piano background
+
+- Replaced exact repetition of the saved phrase with locally arranged variations: a fresh music seed each visit, changing rhythm, melody, register, dynamics and two/three-voice textures.
+- Reused the existing piano arranger and shared phrase scheduler. New director plans take over and Stop clears variation scheduling; cached worlds remain unchanged.
+
 ## 2026-09-12 — Default background switch
 
 - Added one visible background switch and B shortcut to cycle cached worlds. The browser remembers the selected default; switching uses no generation requests and leaves music running.
