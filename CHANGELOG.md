@@ -1,3 +1,9 @@
+## 2026-09-12 — Cloud GLM director
+
+- Cloudflare Worker serves the show and calls GLM-4.7-Flash; no local process or Codex login is required by the cloud page. GitHub Pages routes its director requests to the cloud API.
+- One model still controls notes and visuals; provider credentials stay in encrypted Worker secrets. Added request/response limits, strict score validation, CORS allowlist and per-IP rate limiting.
+- GLM-4.7 returned account-balance error 1113; the free Flash model succeeded in a direct 2.57-second probe. Model continuation is paced at least 15 seconds apart.
+
 ## 2026-09-12 — One model, one performance prompt
 
 - Removed all feature menus from the surface; a single prompt starts or changes the performance, and “停止” stops continuation and sound.

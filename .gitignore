@@ -12,3 +12,6 @@ repertoire/local/
 repertoire/catalogue-maestro.json
 web/repertoire/local/
 docs/repertoire/local/
+
+.wrangler/
+.dev.vars
