@@ -1,3 +1,11 @@
+## 2026-09-12 — Unified automatic performer
+
+- Made the integrated performer workbench the home page; kept independent voice and piano pages.
+- Added a seeded six-section, 32-bar autonomous score with theme return, development and coda.
+- Added opt-in MIDI output, timestamped note releases, sustain and panic; shared music analysis drives all visual presets.
+- Integrated speech/text scenes, MIDI input/files/demos, line-in, mappings, saved pieces, setlists, optional GPT-6/Blender, projector and recording into one clock and page.
+- Preserved default-off sound, Zero-AI, existing Cinematic and electroacoustic modes.
+
 # Changelog
 
 ## 2026-09-12 — Initial public release

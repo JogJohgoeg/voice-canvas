@@ -10,6 +10,9 @@ def visit(name):
     assert '/'+name in allowed, 'Unserved module: '+name
     source=(root/'web'/name).read_text()
     for dependency in re.findall(r"from\s+['\"]\./([^'\"]+)['\"]",source):visit(dependency)
+visit('app.js')
+for entry in ['index.html','voice.html','av_random.html','piano.html','piano_projector.html']:
+    assert '/'+entry in allowed
 for page in (root/'web').glob('*.html'):
     if page.name.endswith('.template.html'):continue
     for entry in re.findall(r'<script[^>]+src="([^"]+)"',page.read_text()):visit(entry.removeprefix('./'))

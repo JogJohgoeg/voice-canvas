@@ -47,7 +47,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply({'status': BACKEND.name, 'backend': BACKEND.name, 'process_id': BACKEND.proc.pid if BACKEND.proc and BACKEND.proc.poll() is None else None})
         elif re.fullmatch(r'/blender_cache/[0-9a-f]{24}/loop\.webm',self.path):
             super().do_GET()
-        elif self.path.split('?')[0] in ('/','/index.html','/av_random.html','/piano.html','/piano_projector.html','/app.js','/parser.mjs','/renderer.mjs','/audio.mjs','/particles.mjs','/sound.mjs','/works.mjs','/blender.mjs','/monet.mjs','/cinematic.mjs','/av_patch.mjs'):
+        elif self.path.split('?')[0] in ('/','/index.html','/voice.html','/av_random.html','/piano.html','/piano_projector.html','/app.js','/parser.mjs','/renderer.mjs','/audio.mjs','/particles.mjs','/sound.mjs','/works.mjs','/blender.mjs','/monet.mjs','/cinematic.mjs','/performer.mjs','/av_patch.mjs'):
             super().do_GET()
         else:
             self.send_error(404)

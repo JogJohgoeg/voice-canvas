@@ -1,3 +1,9 @@
+> **自动演奏家 / Autoperformer** — [统一工作台 / Open workbench](https://jogjohgoeg.github.io/voice-canvas/). 点击 Start 开始；声音默认关闭。浏览器钢琴与所选 MIDI 输出共用乐谱。展开工作台可使用语音、文字、MIDI 输入与文件、钢琴音频分析、谱单、六项映射、GPT-6、Blender、投影及作品保存。原语音页保留在 `voice.html`，独立钢琴分析页保留在 `piano.html`。
+>
+> One shared clock runs an original seeded 32-bar miniature: introduction, theme, development, contrast, return and coda, followed by a new miniature. Three piano registers, phrase dynamics, motif transformations, pedal events and visual harmony analysis run locally. Choose **Connect MIDI**, then an output; channel 1 is used. **Panic** clears scheduled output, releases pedal and sends all-notes-off. No hardware output is selected automatically. Input/file mode routes incoming notes to the browser piano and the explicitly selected output. The browser voice uses fixed decays for incoming MIDI; it is not a sampled concert piano. Hardware latency has not been measured.
+>
+> **Zero-AI** defaults on and disables tiers 2/3. The generative recital uses local rules, not an AI composition model. Same seed and controls reproduce score events; microphone input changes the live response. PNG and WebM include procedural visuals, cached Blender video and the browser audio mix. The sandboxed GPT-6 HTML overlay and sound from an external physical piano are not captured in WebM.
+
 # Voice Canvas / 声画
 
 Live speech becomes an evolving picture. Chinese-first speech semantics choose the forms; loudness, timbre, pitch and onsets shape their motion. Original procedural visuals and synthesized sound, with no copied artwork or recordings.

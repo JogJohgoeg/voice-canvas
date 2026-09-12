@@ -21,8 +21,10 @@ def bundle(template,entry):
 if __name__=='__main__':
     (ROOT/'docs').mkdir(exist_ok=True)
     (ROOT/'docs/.nojekyll').touch()
-    for template,entry,target in [('index.html','app.js','index.html'),('av_random.template.html','av_random.js','av_random.html'),('piano.template.html','piano.js','piano.html'),('piano_projector.template.html','piano_projector.js','piano_projector.html')]:
+    for template,entry,target in [('voice.template.html','app.js','voice.html'),('av_random.template.html','av_random.js','av_random.html'),('piano.template.html','piano.js','piano.html'),('piano_projector.template.html','piano_projector.js','piano_projector.html')]:
         html=bundle(template,entry)
         (ROOT/'docs'/target).write_text(html)
         if target!='index.html':(WEB/target).write_text(html)
         print(target,len(html.encode()),'bytes')
+
+    for directory in [WEB,ROOT/"docs"]:(directory/"index.html").write_text((directory/"av_random.html").read_text())
