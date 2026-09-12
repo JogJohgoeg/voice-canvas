@@ -1,6 +1,6 @@
 # Voice Canvas / 一句话声画演出
 
-[Open the page](https://jogjohgoeg.github.io/voice-canvas/). The page has one prompt and no feature menus. **Model-directed performance requires the local backend**; GitHub Pages cannot access a Codex login on your computer.
+[Open the page](https://jojtown.github.io/voice-canvas/). The page has one prompt and no feature menus. **Model-directed performance requires the local backend**; GitHub Pages cannot access a Codex login on your computer.
 
 ```sh
 python3 run.py
