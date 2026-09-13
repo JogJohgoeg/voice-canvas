@@ -33,4 +33,3 @@ exec(compile(open(VOICE_TD_DIR + '/build.py').read(), VOICE_TD_DIR + '/build.py'
 这会重建 `/project1`，请先另存自己的修改。源码仅依赖 TD 内置的 NumPy。
 
 Open `VoiceCanvas.toe`, choose **Microphone** or **Recording** in `/project1` → **Audio Visual**, then F1 for performance. Recording monitoring is optional; microphone monitoring is always disabled. No server or AI service is used. The legacy browser show remains available separately.
-
