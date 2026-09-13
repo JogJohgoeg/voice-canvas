@@ -28,7 +28,7 @@ try:
  memory=c.create('scriptTOP','memory'); memory.par.callbacks=cb
  if c.op('memory_callbacks1'): c.op('memory_callbacks1').destroy()
  g.inputConnectors[0].connect(memory)
- photo=c.create('moviefileinTOP','portrait'); photo.par.file='assets/performer-side.png'
+ photo=c.create('moviefileinTOP','portrait'); photo.par.file='assets/performer-sport.png'
  g.inputConnectors[1].connect(photo)
  g.par.vec=2; g.par.vec0name='uAudio'; g.par.vec1name='uScene'
  for i,axis in enumerate('xyzw'): g.par['vec0value'+axis].expr="op('features')[%d][0]"%i
